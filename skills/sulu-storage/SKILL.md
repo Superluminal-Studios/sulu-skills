@@ -1,6 +1,6 @@
 ---
 name: sulu-storage
-description: Use Superluminal (Sulu) project and marketplace storage APIs safely. Use for project object storage credentials, uploading render inputs, listing or downloading render output, marketplace media and product-file transfer, entitlement-gated downloads, retention, and destructive storage consequences.
+description: Use Superluminal (Sulu) project and marketplace storage safely. Prefer Sulu add-on-managed render transfers when Blender MCP is connected; use the public APIs for deliberate headless/custom-client uploads, render output access, marketplace media and product-file transfer, entitlement-gated downloads, retention, credentials, and destructive storage consequences.
 ---
 
 # Sulu storage API
@@ -16,6 +16,22 @@ Sulu has two separate storage systems:
   signed headers.
 
 Never mix their credentials or object layouts.
+
+## Prefer add-on-managed render transfers
+
+When Blender MCP is connected and the Sulu Blender add-on is available, let the
+add-on own render-input preparation and transfer. Use Blender MCP to inspect or
+configure the current scene and invoke the registered add-on workflow; do not
+fetch storage credentials, construct object layouts, or run `rclone` directly
+through MCP code.
+
+The add-on coordinates schema capture, dependency preparation, upload mode,
+transfer configuration, and job registration as one compatible operation.
+Follow [sulu-render](../sulu-render/SKILL.md) for approval and submission.
+
+Use the project-storage API below for deliberate headless/custom-client
+submission, output retrieval, or storage work outside an active add-on flow.
+Never combine manual and add-on transfers for the same submission.
 
 ## Project render storage
 

@@ -2,7 +2,8 @@
 
 ## Scope
 
-This repository contains client-agnostic guides for the public Sulu API,
+This repository contains guides for the public Sulu API, recommended
+Blender MCP and Sulu add-on coordination for render submission,
 machine-readable API ownership data, and documentation validation.
 
 ## Rules
@@ -13,6 +14,9 @@ machine-readable API ownership data, and documentation validation.
   response contracts, side effects, and behavioral guardrails.
 - Do not prescribe local commands, helper programs, concrete filenames, or a
   particular client implementation.
+- For Blender submission, prefer registered Sulu add-on operations through
+  Blender MCP. Assign schema, dependency, and transfer work to the add-on
+  without documenting private modules or raw transfer commands.
 - Do not include infrastructure vendors, data-store technology, private source
   layout, deployment details, internal role names, or implementation-specific
   authorization behavior.

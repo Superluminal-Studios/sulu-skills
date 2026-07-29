@@ -1,20 +1,23 @@
 # sulu-skills
 
-**Experimental.** Client-agnostic agent skills for the public Superluminal
-(Sulu) API at `https://api.superlumin.al`.
+**Experimental.** Agent skills for the public Superluminal (Sulu) API at
+`https://api.superlumin.al`, with a preferred Blender MCP and Sulu add-on path
+for render submission.
 
 Each skill contains a concise entrypoint, a detailed HTTP reference, and agent
 discovery metadata. The guides describe request methods, public paths, fields,
 response contracts, side effects, and approval boundaries without prescribing
-a programming language, command-line tool, or local file layout.
+a programming language, command-line tool, or local file layout. The render
+guide additionally defines how Blender MCP should hand scene and transfer work
+to the Sulu add-on.
 
 ## Skills
 
 | Skill | Covers |
 | --- | --- |
 | `sulu-api` | Authentication, shared request rules, account security, organizations, projects, billing, referrals, and support |
-| `sulu-render` | Approval-bound render submission, cost estimation, monitoring, editing, duplication, and results |
-| `sulu-storage` | Project storage access, output layout, and marketplace transfer sessions |
+| `sulu-render` | Blender MCP and add-on submission, API fallback, cost estimation, monitoring, editing, duplication, and results |
+| `sulu-storage` | Add-on-managed render transfers, project storage access, output layout, and marketplace transfer sessions |
 | `sulu-production` | Production configuration, elements, tasks, revisions, review media, time, notifications, and planning |
 | `sulu-market` | Buying, delivery, reviews, seller onboarding, products, media, discounts, orders, and earnings |
 
@@ -24,11 +27,17 @@ explains how that inventory is organized.
 
 ## Render submissions
 
-The render guide walks an agent through authentication and scope checks,
-storage preparation, current capacity and balance reads, conservative cost
-estimation, human approval, one submission, and result reconciliation. It does
-not recommend a separate validation render, use concrete local filenames, or
-assume a particular API client.
+Submitting Blender jobs is the primary workflow. When Blender MCP and the Sulu
+Blender add-on are available, agents should use them together: Blender MCP
+inspects and configures the live scene, the add-on captures the Blender schema,
+prepares dependencies, performs transfers, and registers the job, and the Sulu
+API supplies scope, pricing, approval, monitoring, and reconciliation.
+
+Direct storage and render API submission remains documented for deliberate
+headless or custom-client work. An agent must choose one submission path and
+must not dispatch the same billable job through both the add-on and raw API.
+The guide does not recommend a separate validation render or use concrete
+local filenames.
 
 ## Safety
 

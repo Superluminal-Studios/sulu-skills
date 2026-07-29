@@ -36,8 +36,12 @@ LOCAL_IMPLEMENTATION_RE = re.compile(
     r"|/(?:tmp|absolute)/"
     r"|\bpython3\b"
     r"|\bgo[ \t]+run\b"
-    r"|\brclone\b"
     r")",
+    re.IGNORECASE,
+)
+RAW_RCLONE_COMMAND_RE = re.compile(
+    r"\brclone(?:\.exe)?[ \t]+"
+    r"(?:copy|sync|move|copyto|moveto|delete|purge|mkdir|rmdir|ls|lsf|lsjson)\b",
     re.IGNORECASE,
 )
 CONCRETE_FILENAME_RE = re.compile(
@@ -244,6 +248,14 @@ class Validator:
                 "skills must describe the API rather than local helper commands or paths: "
                 f"{implementation.group(0)!r}",
             )
+        raw_transfer = RAW_RCLONE_COMMAND_RE.search(text)
+        if raw_transfer:
+            self.error(
+                path,
+                "skills may assign transfer ownership to the Sulu add-on but must not "
+                "prescribe raw rclone commands: "
+                f"{raw_transfer.group(0)!r}",
+            )
         if BASH_FENCE_RE.search(text):
             self.error(path, "skills must use API method/path examples, not shell commands")
 
@@ -339,6 +351,38 @@ class Validator:
                         f"{section}[{index}] evidence does not mention {needle!r}",
                     )
 
+    def validate_blender_submission_coordination(self) -> None:
+        render_skill = SKILLS / "sulu-render" / "SKILL.md"
+        coordination = SKILLS / "sulu-render" / "references" / "blender-mcp.md"
+        readme = ROOT / "README.md"
+        required = {
+            render_skill: (
+                "Blender MCP",
+                "Sulu Blender add-on",
+                "references/blender-mcp.md",
+            ),
+            coordination: (
+                "bpy.ops.superluminal.submit_job",
+                "`rclone` directly",
+                "Do not also call the raw submit endpoint",
+            ),
+            readme: (
+                "Submitting Blender jobs is the primary workflow",
+                "must not dispatch the same billable job through both",
+            ),
+        }
+        for path, phrases in required.items():
+            if not path.is_file():
+                self.error(path, "missing Blender submission coordination guide")
+                continue
+            text = path.read_text(encoding="utf-8")
+            for phrase in phrases:
+                if phrase not in text:
+                    self.error(
+                        path,
+                        f"must preserve Blender MCP and Sulu add-on guidance: {phrase!r}",
+                    )
+
 
     def run(self) -> int:
         if not SKILLS.is_dir():
@@ -381,6 +425,7 @@ class Validator:
                     self.validate_public_vocabulary(path)
 
         self.validate_manifest(ROOT / "api-surface.json")
+        self.validate_blender_submission_coordination()
         return self.finish()
 
     def finish(self) -> int:

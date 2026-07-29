@@ -1,4 +1,4 @@
 interface:
   display_name: "Sulu Render"
-  short_description: "Submit and manage render jobs safely"
-  default_prompt: "Use $sulu-render to safely plan, submit, monitor, or manage my Sulu render job."
+  short_description: "Submit Blender jobs through Sulu safely"
+  default_prompt: "Use $sulu-render with Blender MCP and the Sulu add-on to inspect my scene, approve cost, submit once, and monitor the render."
