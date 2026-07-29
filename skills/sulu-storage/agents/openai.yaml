@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sulu Storage"
+  short_description: "Manage Sulu project files safely"
+  default_prompt: "Use $sulu-storage to safely upload, list, download, or remove my Sulu project files."

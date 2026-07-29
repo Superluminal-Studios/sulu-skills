@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sulu Organizations"
+  short_description: "Manage Sulu organizations and projects"
+  default_prompt: "Use $sulu-organizations to safely inspect membership and manage my Sulu organizations and projects."

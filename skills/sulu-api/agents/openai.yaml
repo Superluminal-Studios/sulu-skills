@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sulu API"
+  short_description: "Authenticate and call the Sulu API"
+  default_prompt: "Use $sulu-api to authenticate safely and call the user-scoped Sulu API."

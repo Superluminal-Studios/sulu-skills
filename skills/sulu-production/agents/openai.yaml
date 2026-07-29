@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sulu Production"
+  short_description: "Manage Sulu production tracking and review"
+  default_prompt: "Use $sulu-production to plan production work, update tasks, and review media safely through the Sulu API."
