@@ -370,6 +370,10 @@ class Validator:
                 "must not silently become the submission mechanism",
             ),
             readme: (
+                "## Installation",
+                "Superluminal-Studios/sulu-skills/tree/main/skills/sulu-render",
+                "`sulu-api`, `sulu-render`, and `sulu-storage`",
+                '${CODEX_HOME:-$HOME/.codex}/skills',
                 "Submitting Blender jobs is the primary workflow",
                 "successful read-only MCP inspection",
                 "must not dispatch the same billable job through both",
