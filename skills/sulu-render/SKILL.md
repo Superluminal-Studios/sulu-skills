@@ -33,6 +33,26 @@ Blender MCP for submission. Use direct storage and render API calls as the
 fallback for deliberate headless/custom-client work or when the add-on is
 unavailable.
 
+## Readiness gate
+
+Before any storage, upload, or billable call:
+
+1. Prove that a read-only Blender MCP scene inspection succeeds.
+2. Confirm that the current Blender project is saved.
+3. Confirm that the Sulu add-on is enabled and its registered submit operation
+   exists.
+4. Refresh identity through the documented Sulu API and prove the exact
+   requested user.
+5. Confirm that the add-on-selected project matches the API project and
+   organization.
+
+If MCP is unavailable, desktop control may diagnose Blender but must not
+silently replace MCP for submission. If the add-on is unavailable, stop or
+obtain agreement to use the direct API fallback. If authentication cannot be
+refreshed, use the add-on's human-facing browser sign-in and restart this gate.
+Never search local caches, environment variables, session storage, command
+history, or unrelated applications for alternate tokens.
+
 ## Required scope
 
 Before any render action:
@@ -70,6 +90,11 @@ Use this sequence:
 Submission spends real money. Never submit from a vague request, silently add
 frames, buy credits automatically, or increase capacity without separate
 approval.
+
+Before asking for approval, report MCP connection, add-on readiness, saved
+scene state, exact identity and scope, scene and frame settings, upload mode,
+capacity revision and rate, current balance, runtime basis, estimate,
+contingency, and uncertainty. Missing evidence is a blocker, not an assumption.
 
 ## Core endpoints
 
@@ -237,6 +262,8 @@ committed files.
 - Keep Blender MCP execution limited to confirmed scene/property changes and
   registered Sulu add-on operators; never use it to read secrets or call
   add-on-private modules.
+- Never search local caches, environment variables, add-on session storage, or
+  unrelated applications for authentication material.
 - Require explicit human approval for spending, capacity changes, job control,
   duplication, and deletion.
 - Keep Sulu tokens, object storage credentials, farm keys, and presigned URLs in

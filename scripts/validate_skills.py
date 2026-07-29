@@ -360,14 +360,18 @@ class Validator:
                 "Blender MCP",
                 "Sulu Blender add-on",
                 "references/blender-mcp.md",
+                "Never search local caches",
             ),
             coordination: (
                 "bpy.ops.superluminal.submit_job",
                 "`rclone` directly",
                 "Do not also call the raw submit endpoint",
+                "Readiness and approval packet",
+                "must not silently become the submission mechanism",
             ),
             readme: (
                 "Submitting Blender jobs is the primary workflow",
+                "successful read-only MCP inspection",
                 "must not dispatch the same billable job through both",
             ),
         }

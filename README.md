@@ -33,6 +33,11 @@ inspects and configures the live scene, the add-on captures the Blender schema,
 prepares dependencies, performs transfers, and registers the job, and the Sulu
 API supplies scope, pricing, approval, monitoring, and reconciliation.
 
+Before any credential, upload, or billable action, the render skill requires a
+successful read-only MCP inspection, a saved Blender project, registered Sulu
+add-on operations, refreshed proof of the exact requested identity, and a
+matching add-on/API project.
+
 Direct storage and render API submission remains documented for deliberate
 headless or custom-client work. An agent must choose one submission path and
 must not dispatch the same billable job through both the add-on and raw API.

@@ -4,6 +4,16 @@ Use this workflow when Blender is open, Blender MCP is connected, and the Sulu
 Blender add-on is enabled. It is the preferred path for submitting the current
 scene because each component keeps the responsibility it understands.
 
+## Contents
+
+- [Division of responsibility](#division-of-responsibility)
+- [Prefer registered add-on operations](#prefer-registered-add-on-operations)
+- [Readiness gate](#readiness-gate)
+- [Preferred workflow](#preferred-workflow)
+- [Readiness and approval packet](#readiness-and-approval-packet)
+- [MCP execution boundary](#mcp-execution-boundary)
+- [Direct API fallback](#direct-api-fallback)
+
 ## Division of responsibility
 
 | Component | Responsibility |
@@ -35,6 +45,32 @@ operation rather than separate agent-facing operations. If the add-on exposes
 dedicated registered operations in the future, prefer those to private
 function imports.
 
+## Readiness gate
+
+Complete this gate before reading storage credentials or preparing a billable
+submission:
+
+1. Confirm that Blender MCP advertises a scene-inspection capability and that
+   a read-only scene call succeeds against the intended Blender instance.
+2. Confirm that the current Blender project is saved.
+3. Confirm that the Sulu add-on is enabled and the required
+   `bpy.ops.superluminal` operations are registered.
+4. Refresh the Sulu identity through the documented API and prove that it is
+   the exact account the human requested.
+5. Confirm that the add-on's selected project belongs to that account and
+   matches the project used for API pricing and balance reads.
+
+If Blender MCP is absent, a desktop-control tool may diagnose the open
+application but must not silently become the submission mechanism. If the Sulu
+add-on is missing or its operations are unregistered, stop and ask the human
+to install or enable the trusted add-on.
+
+If identity refresh fails or returns a different account, stop. Do not search
+for token candidates in environment variables, local caches, add-on session
+storage, command history, or unrelated applications. Use the Sulu add-on's
+human-facing browser sign-in operation, let the human complete authentication,
+then restart the readiness gate.
+
 ## Preferred workflow
 
 1. Use `sulu-api` to confirm the user, organization, and selected project.
@@ -58,6 +94,25 @@ function imports.
    not as proof that the API accepted a job.
 10. Reconcile through the add-on's selected-project job list or the Sulu jobs
     API. Do not invoke the operator again while the outcome is unclear.
+
+## Readiness and approval packet
+
+Before the single submission call, report every item below:
+
+| Item | Required evidence |
+| --- | --- |
+| MCP | Connected Blender instance and successful read-only inspection |
+| Add-on | Enabled, registered submission operation, authenticated account |
+| Scene | Saved state, scene, engine, frame list, output settings |
+| Scope | Exact user, organization, project, and relationship |
+| Transfer | Add-on upload mode and selected bundled add-ons |
+| Capacity | Current revision, GPU shape, effective rate, pending changes |
+| Funds | Current organization balance and response time |
+| Estimate | Runtime basis, formula, contingency, total, and uncertainty |
+| Approval | Exact project, frames, settings, and estimated spend approved now |
+
+Do not collapse missing items into assumptions. If any item changes after
+approval, rebuild the packet and obtain approval again.
 
 ## MCP execution boundary
 
