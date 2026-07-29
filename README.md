@@ -31,33 +31,36 @@ Install only the skills needed for the workflows being tested. For Blender
 render submission, install `sulu-api`, `sulu-render`, and `sulu-storage`
 together. `sulu-production` and `sulu-market` can be installed independently.
 
-### Ask Codex to install a skill
+### Ask an agent to install a skill
 
-Give Codex the GitHub location of the individual skill. For example:
+Give an agent with skill-installation support the GitHub location of the
+individual skill. For example:
 
 > Install the `sulu-render` skill from
 > `https://github.com/Superluminal-Studios/sulu-skills/tree/main/skills/sulu-render`.
 
 Replace `sulu-render` in both places with any skill name from the table above.
-To install the Blender render set, ask Codex to install these three locations:
+To install the Blender render set, ask the agent to install these three
+locations:
 
 - `https://github.com/Superluminal-Studios/sulu-skills/tree/main/skills/sulu-api`
 - `https://github.com/Superluminal-Studios/sulu-skills/tree/main/skills/sulu-render`
 - `https://github.com/Superluminal-Studios/sulu-skills/tree/main/skills/sulu-storage`
 
-The installed skills become available to Codex on the next turn.
+Reload the agent's skill discovery or start a new session after installation.
 
 ### Install manually
 
 Clone this repository, choose one skill, and copy that skill directory into the
-Codex skills directory:
+skills directory recognized by the agent host. This example defaults to
+`.agents/skills`; set `AGENT_SKILLS_DIR` when the host uses another location.
 
 ```bash
 git clone --depth 1 https://github.com/Superluminal-Studios/sulu-skills.git
 cd sulu-skills
 
 SULU_SKILL_NAME=sulu-render
-SULU_SKILL_DEST="${CODEX_HOME:-$HOME/.codex}/skills"
+SULU_SKILL_DEST="${AGENT_SKILLS_DIR:-$HOME/.agents/skills}"
 
 mkdir -p "$SULU_SKILL_DEST"
 if [ -e "$SULU_SKILL_DEST/$SULU_SKILL_NAME" ]; then
@@ -69,8 +72,8 @@ cp -R "skills/$SULU_SKILL_NAME" "$SULU_SKILL_DEST/$SULU_SKILL_NAME"
 
 Set `SULU_SKILL_NAME` to `sulu-api`, `sulu-render`, `sulu-storage`,
 `sulu-production`, or `sulu-market`. The safety check intentionally stops if
-that skill is already installed instead of overwriting it. Start a new Codex
-turn after installation.
+that skill is already installed instead of overwriting it. Reload skill
+discovery or start a new agent session after installation.
 
 Installing these guides does not grant Sulu access or install external
 integrations. Blender render testing also requires an authenticated Sulu

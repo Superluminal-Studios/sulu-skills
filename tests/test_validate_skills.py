@@ -8,6 +8,19 @@ from scripts.validate_skills import Validator
 
 
 class ValidateSkillsTests(unittest.TestCase):
+    def test_public_vocabulary_rejects_agent_specific_branding(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "guide.md"
+            path.write_text("Install with " + "Code" + "x.\n", encoding="utf-8")
+            validator = Validator()
+            validator.validate_public_vocabulary(path)
+            self.assertTrue(
+                any(
+                    "private implementation terminology" in error
+                    for error in validator.errors
+                )
+            )
+
     def test_api_guide_rejects_validation_render_advice(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "guide.md"

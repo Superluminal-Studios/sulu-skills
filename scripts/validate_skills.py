@@ -67,6 +67,7 @@ PRIVATE_TERM_HASHES = {
     "382132701c4733c3402706cfdd3c8fc7f41f80a88dce5428d145259a41c5f12f",
     "3bc801a33ea83df414e1aeb962a52412835be99db28668ec25de73fdd4733804",
     "4c984aaa0eaf505ae56d8bf7957202ddcf9aa199077a91196ef9987b83debdb8",
+    "57de4cf40144bdf7d00010f2f5557a7d642c2b9705309bfade167dd313e2ca93",
     "738e22f0acab814cc0c6a9dfdd1c6a193ea278e48b07f070784d608243e68d8c",
     "7e91fe78e86739ad6d2e96c55d4f8922f6a0eb2b87245273782b7d47c8e64f4c",
     "8a6cead4385ed4394247b71692fb729b0563f8e1bd4818a8c6c82940e9e099ba",
@@ -197,7 +198,7 @@ class Validator:
         if SOURCE_FILENAME_RE.search(text):
             self.error(path, "contains a private source filename reference")
             return
-        for token in re.findall(r"[a-z0-9_.-]+", text):
+        for token in re.findall(r"[a-z0-9]+(?:[_.-][a-z0-9]+)*", text):
             digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
             if digest in PRIVATE_TERM_HASHES:
                 self.error(path, "contains private implementation terminology")
@@ -373,7 +374,7 @@ class Validator:
                 "## Installation",
                 "Superluminal-Studios/sulu-skills/tree/main/skills/sulu-render",
                 "`sulu-api`, `sulu-render`, and `sulu-storage`",
-                '${CODEX_HOME:-$HOME/.codex}/skills',
+                '${AGENT_SKILLS_DIR:-$HOME/.agents/skills}',
                 "Submitting Blender jobs is the primary workflow",
                 "successful read-only MCP inspection",
                 "must not dispatch the same billable job through both",
