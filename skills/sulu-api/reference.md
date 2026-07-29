@@ -198,13 +198,13 @@ This behavior applies only to collection-list requests.
 | Collection | Access |
 | --- | --- |
 | `users` | List is public (emails hidden unless `emailVisibility` is set). View, update, and delete are self-only. Create is public, Turnstile-gated. |
-| `projects` | The signed-in owner may list, view, update, and delete their projects. Creating a project can provision storage. See [sulu-organizations](../sulu-organizations/SKILL.md). |
+| `projects` | The signed-in owner may list, view, update, and delete their projects. Creating a project can provision storage. See the [organizations and projects reference](references/organizations.md). |
 | `project_storage` | List and view for org members. Create, update, and delete are service-only. **Reading has side effects**: it returns live credentials, rotates them when they are missing or within an hour of expiry (or when `force_renew=1`/`renew=1` is passed), and a list filtered by `project_id` that matches nothing can provision a bucket. |
 | `render_queues` | Organization-owner read access. Contains a sensitive farm user key; use only where the render guide requires it. |
 | `blender_settings_schemas` | Reached through `/api/blender_schemas`, not directly. |
-| `organizations`, `organization_members` | See [sulu-organizations](../sulu-organizations/SKILL.md). |
+| `organizations`, `organization_members` | See the [organizations and projects reference](references/organizations.md). |
 | `jobs` | Read through `/api/jobs/{org_id}`. See [sulu-render](../sulu-render/SKILL.md). |
-| `referrals`, `referral_usages` | See [sulu-billing](../sulu-billing/SKILL.md). |
+| `referrals`, `referral_usages` | See the [billing reference](references/billing.md). |
 
 Note the asymmetry on `users`: list is public but single-record view is self-only, so a
 record you can see in a list may `404` on a direct view.

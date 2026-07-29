@@ -1,11 +1,11 @@
-# sulu-market-seller reference
+# Sulu Market seller reference
 
 Complete endpoint reference for the seller side of Sulu Market: seller identity, Stripe Connect
 onboarding, the product authoring coordinator, product media, lifecycle transitions, tiers and
 discounts, orders, earnings, reporting and exports, refunds, reviews and conversations.
 
 Base URL: `https://api.superlumin.al`. Auth header on every authenticated call:
-`Authorization: <token>` (raw Sulu JWT from [../sulu-api/SKILL.md](../sulu-api/SKILL.md); a
+`Authorization: <token>` (raw Sulu JWT from the [Sulu API guide](../../sulu-api/SKILL.md); a
 `Bearer` prefix is tolerated).
 
 **Response envelope.** These endpoints return **bare JSON objects**, not the

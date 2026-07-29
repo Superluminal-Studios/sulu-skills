@@ -1,4 +1,4 @@
 interface:
   display_name: "Sulu Market"
-  short_description: "Browse and manage Sulu Market purchases"
-  default_prompt: "Use $sulu-market to safely browse, save, buy, download, review, or discuss Sulu Market products."
+  short_description: "Buy, sell, and manage Sulu Market products"
+  default_prompt: "Use $sulu-market to safely buy or sell products and manage my Sulu Market listings, orders, delivery, reviews, or earnings."

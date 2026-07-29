@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sulu Billing"
-  short_description: "Read billing and manage render credits"
-  default_prompt: "Use $sulu-billing to safely read my Sulu billing information or manage render credits."

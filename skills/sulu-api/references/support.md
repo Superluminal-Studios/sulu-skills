@@ -1,4 +1,4 @@
-# Sulu support proxy API reference
+# Sulu support API reference
 
 ## Contents
 
@@ -118,7 +118,7 @@ support transcript. Rely on bootstrap identity and retain only task-relevant fie
 
 The message endpoint also accepts multipart data. The exact upstream size and type limits
 can change; inspect attachments locally and let the API validate them. Follow the
-[multipart API guidance](../sulu-api/multipart.md), including the conservative ten-file
+[multipart API guidance](../multipart.md), including the conservative ten-file
 and 40 MiB encoded-request ceiling for the buffered proxy. Before upload:
 
 1. Confirm the selected attachment is the intended regular file.

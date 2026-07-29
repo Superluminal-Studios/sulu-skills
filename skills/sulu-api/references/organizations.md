@@ -1,11 +1,11 @@
-# sulu-organizations reference
+# Sulu organizations and projects reference
 
 Complete endpoint and collection reference for organizations, membership, and projects.
 Base URL: `https://api.superlumin.al`. Auth header on every authenticated call:
 `Authorization: <token>` (raw Sulu JWT; a `Bearer` prefix is tolerated).
 
-See the [task-oriented guide](SKILL.md) and
-[shared guardrails](../../GUARDRAILS.md) for conduct rules.
+See the [task-oriented guide](../SKILL.md) and
+[shared guardrails](../../../GUARDRAILS.md) for conduct rules.
 
 ## Contents
 
@@ -168,10 +168,10 @@ PATCH /api/organizations/org_abc123
   unless** the field is `seller_avatar` and the record has `seller_avatar_validated = true`.
   This is the URL emitted in `avatar` DTO fields.
 
-### Seller profile routes (handled here, documented in sulu-market-seller)
+### Seller profile routes
 
 Two organization-shaped routes belong to the seller domain. Full field reference is in the
-[seller guide](../sulu-market-seller/SKILL.md).
+[Sulu Market guide](../../sulu-market/SKILL.md).
 
 - `GET /api/market/seller/{orgId}/profile` (seller-capability `seller_access`): returns `id`,
   `name`, `avatar`, `slug`, `tagline`, `bio`, `website`, `location`, `social_links`,
@@ -289,7 +289,7 @@ the Sulu app or support.
 - **Fields:** `project_id`, `bucket_name`, `access_key_id`, `secret_access_key`,
   `session_token`, `expiry`.
 - These are **live S3 credentials** with a one-week TTL. Never print, log, or persist them.
-  Usage is covered in [../sulu-storage/SKILL.md](../sulu-storage/SKILL.md).
+  Usage is covered in the [Sulu storage guide](../../sulu-storage/SKILL.md).
 
 ### Production tracker collections
 

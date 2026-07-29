@@ -1,11 +1,11 @@
-# sulu-billing reference
+# Sulu billing reference
 
 Complete endpoint reference for Sulu billing: balance, credit purchases, payment
 history, automatic top-up, render pricing, referrals.
 
 Base URL: `https://api.superlumin.al`. Auth header on every authenticated call:
 `Authorization: <token>` (raw Sulu JWT from
-[../sulu-api/SKILL.md](../sulu-api/SKILL.md); a `Bearer` prefix is tolerated).
+[Sulu API guide](../SKILL.md); a `Bearer` prefix is tolerated).
 
 **Response envelope.** The `/api/stripe/*` and `/api/referral/*` endpoints return
 **bare JSON objects**, not the `{"status":"success","body":{...}}` envelope used by
@@ -60,7 +60,7 @@ negative.
 - **Errors**: `400 organization id is invalid`; `404 organization not found` (also
   for archived or quarantined orgs); `403 not a member of this organization`.
 - **Side effects**: none. Full documentation:
-  [../sulu-organizations/reference.md](../sulu-organizations/reference.md).
+  [organizations and projects reference](organizations.md).
 
 ### blocked_funds (derived job status, no endpoint)
 
@@ -76,7 +76,7 @@ non-empty, `status_reason`. `jobsEffectiveStatusFromCounts` returns
 Job DTOs also carry `org_balance` (float dollars) when the org record had a balance
 field, which makes job polling a second way to watch the balance. Nothing is stored:
 top up and the derived status clears on the next read. See
-[../sulu-render/reference.md](../sulu-render/reference.md).
+[render reference](../../sulu-render/reference.md).
 
 ---
 
@@ -258,7 +258,7 @@ Authenticated organization members use
 `GET /api/render/capacity/{organization_id}` and its
   `effective_rate_table_microusd`, `effective_rate_microusd`, `rate_basis_gpus`,
   `curve_version_id`, `curve_checksum`, and `multiplier_bps` fields. See
-  [../sulu-render/reference.md](../sulu-render/reference.md).
+  [render reference](../../sulu-render/reference.md).
 - **Estimation rule**: combine the returned concurrency and rate with a conservative
   runtime assumption or relevant completed-job evidence and contingency, then recheck
   immediately before submission.

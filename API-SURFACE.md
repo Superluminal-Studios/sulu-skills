@@ -19,16 +19,11 @@ claim the same route.
 
 | Skill | Public API domain |
 | --- | --- |
-| `sulu-api` | Authentication, request conventions, records, files, and realtime |
-| `sulu-account` | Signed-in user profile and security lifecycle |
-| `sulu-organizations` | Organizations, memberships, roles, and projects |
+| `sulu-api` | Authentication, records, account lifecycle, organizations, projects, billing, referrals, and support |
 | `sulu-production` | Production configuration, work tracking, review, media, and planning |
 | `sulu-render` | Render settings, estimates, submission, job controls, and results |
 | `sulu-storage` | Project storage and marketplace transfer sessions |
-| `sulu-billing` | Balance, credits, invoices, pricing, auto top-up, and referrals |
-| `sulu-market` | Catalog, buyer checkout, library, delivery, reviews, and conversations |
-| `sulu-market-seller` | Seller onboarding, product management, orders, and earnings |
-| `sulu-support` | Authenticated support messaging |
+| `sulu-market` | Catalog, checkout, delivery, reviews, seller onboarding, product management, orders, and earnings |
 
 Cross-domain workflows have one primary owner and link to the other relevant
 skills. For example, storage owns byte transfer while render owns the

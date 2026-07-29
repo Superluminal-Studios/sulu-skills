@@ -165,7 +165,7 @@ multipart uploads are aborted at 7 days. Nothing is exempt.
 
 Every route in this group requires a valid auth token (`apis.RequireAuth()`), with per-endpoint
 authorization on top. These mutate marketplace catalog state; drive them from
-[../sulu-market-seller/SKILL.md](../sulu-market-seller/SKILL.md) (uploads) or
+[sulu-market](../sulu-market/SKILL.md) (uploads) or
 [../sulu-market/SKILL.md](../sulu-market/SKILL.md) (buyer downloads), not from project work.
 
 Presign TTLs: uploads **15 minutes**, downloads **2 minutes**. All uploads are a **single PUT**, no
@@ -314,7 +314,7 @@ entitlement stamp. Returns 409 when the product's Blender-extension identity is 
 ### Product-media routes
 
 Modern product media uses the authenticated routes documented by
-[sulu-market-seller](../sulu-market-seller/SKILL.md). Follow that skill for
+[sulu-market](../sulu-market/SKILL.md). Follow that skill for
 payloads, ordering, pruning, updates, and deletion.
 
 ---

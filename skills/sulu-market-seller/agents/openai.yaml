@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sulu Market Seller"
-  short_description: "Manage Sulu Market seller products"
-  default_prompt: "Use $sulu-market-seller to safely manage my Sulu Market seller profile, products, orders, or earnings."

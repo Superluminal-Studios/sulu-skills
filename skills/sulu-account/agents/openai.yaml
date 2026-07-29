@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sulu Account"
-  short_description: "Manage your Sulu identity and security"
-  default_prompt: "Use $sulu-account to safely manage my Sulu profile, sign-in methods, or account lifecycle."

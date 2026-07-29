@@ -82,7 +82,7 @@ objects requires explicit confirmation of the exact keys.
 Deleting a project or its storage record can permanently destroy the whole
 bucket. Never delete `project_storage` directly. Project deletion belongs to
 the backup, dependency, and fresh-confirmation workflow in
-[sulu-organizations](../sulu-organizations/SKILL.md).
+[sulu-api](../sulu-api/SKILL.md).
 
 ## Marketplace media
 
@@ -112,7 +112,7 @@ Gallery finalization changes the public storefront. Confirm the intended order
 and exact included media.
 
 Modern product-media authoring uses the dedicated routes documented in
-[sulu-market-seller](../sulu-market-seller/SKILL.md).
+[sulu-market](../sulu-market/SKILL.md).
 
 ## Marketplace product files
 
@@ -133,7 +133,7 @@ POST /api/storage/files/upload/complete
 
 The server verifies object metadata before making the file available.
 Commercial product-file changes should normally be coordinated through
-[sulu-market-seller](../sulu-market-seller/SKILL.md).
+[sulu-market](../sulu-market/SKILL.md).
 
 ## Entitlement-gated download
 

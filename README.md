@@ -12,16 +12,11 @@ a programming language, command-line tool, or local file layout.
 
 | Skill | Covers |
 | --- | --- |
-| `sulu-api` | Authentication, access tokens, request conventions, records, pagination, files, and realtime |
-| `sulu-account` | Profile, avatar, username, password and email lifecycle, sign-in connections, and account deletion |
+| `sulu-api` | Authentication, shared request rules, account security, organizations, projects, billing, referrals, and support |
 | `sulu-render` | Approval-bound render submission, cost estimation, monitoring, editing, duplication, and results |
 | `sulu-storage` | Project storage access, output layout, and marketplace transfer sessions |
-| `sulu-organizations` | Organizations, memberships, roles, and projects |
 | `sulu-production` | Production configuration, elements, tasks, revisions, review media, time, notifications, and planning |
-| `sulu-billing` | Balance, credit purchases, invoices, auto top-up, pricing, and referrals |
-| `sulu-market` | Catalog browsing, wishlists, checkout, library, reviews, conversations, and delivery |
-| `sulu-market-seller` | Seller onboarding, products, versions, tiers, media, wiki, discounts, orders, and earnings |
-| `sulu-support` | Authenticated support conversations, messages, attachments, and presence |
+| `sulu-market` | Buying, delivery, reviews, seller onboarding, products, media, discounts, orders, and earnings |
 
 The public API inventory in [api-surface.json](api-surface.json) assigns every
 documented user route and collection to one skill. [API-SURFACE.md](API-SURFACE.md)

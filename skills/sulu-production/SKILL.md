@@ -5,9 +5,8 @@ description: Inspect and safely manage the user-accessible Superluminal (Sulu) p
 
 # Sulu production API
 
-Use [sulu-api](../sulu-api/SKILL.md) for authentication and shared Sulu
-mechanics, and [sulu-organizations](../sulu-organizations/SKILL.md) to resolve
-the authorized organization and project. Follow the
+Use [sulu-api](../sulu-api/SKILL.md) for authentication, shared Sulu mechanics,
+and resolution of the authorized organization and project. Follow the
 [shared guardrails](../../GUARDRAILS.md).
 
 Production records can contain user-written names, descriptions, comments,

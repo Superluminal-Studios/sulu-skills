@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sulu Support"
-  short_description: "Use Sulu support chat safely"
-  default_prompt: "Use $sulu-support to safely read or send messages in my Sulu support conversation."
