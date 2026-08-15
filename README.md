@@ -1,5 +1,10 @@
 # sulu-skills
 
+> **Secret source:** In the Sulu superrepo checkout, resolve real credentials
+> through `../.secrets/SECRETS_INDEX.md` and verify them with the superrepo
+> secret audit. These guides document variables and API contracts only; never
+> copy values from docs or `.secrets/discovered/` evidence.
+
 **Experimental.** Agent skills for the public Superluminal (Sulu) API at
 `https://api.superlumin.al`, with a preferred Blender MCP and Sulu add-on path
 for render submission.
