@@ -202,8 +202,13 @@ GET /api/collections/projects/records?filter=%28organization_id%3D%27org_abc123%
 
 ### POST /api/collections/projects/records
 
-- **Auth:** user-token. Set `owner_id` to the signed-in user's id.
-- **Consequence:** provisions project storage and temporary storage access.
+- **Coordinated release:** closed. Do not use raw creation. Use
+  `POST /api/projects/create` with `{organization_id, name, idempotency_key}`.
+  The key is a UUID; the chosen organization must be currently accessible.
+  Poll `GET /api/projects/operations/{id}` for completion. Repeating the same
+  key and input reconciles the original project; changed input conflicts.
+- The historical raw field table below is not a creation contract for that
+  release. Project creation remains outside the Sulu User MCP.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -345,10 +350,12 @@ render queue keys. There is no "create my first org" step for a new user.
 
 ### 5. Create a project and reach its storage
 
-1. `POST /api/collections/projects/records` with `{name, owner_id: "<your-user-id>"}`.
-2. Re-fetch the record for the assigned `sqid` and the forced `organization_id`.
-3. `GET /api/collections/project_storage/records?filter=project_id="<projectId>"` for
-   `bucket_name` and the temporary S3 credentials.
+1. In the coordinated release, confirm the intended organization and call
+   `POST /api/projects/create` with `{name, organization_id, idempotency_key}`.
+2. Poll `GET /api/projects/operations/{id}` and use its resulting project only
+   after success. Never infer the organization from the user's first membership.
+3. For rendering, use the exact upload/receipt workflow in the User MCP or
+   current Sulu add-on; do not obtain general storage credentials for MCP work.
 
 ### 6. Build a production hierarchy
 

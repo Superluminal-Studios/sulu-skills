@@ -58,6 +58,93 @@ PUBLIC_SURFACE_COUNTS = {
     "collections": 34,
     "builtin_user_routes": 19,
 }
+CANDIDATE_TOOLS = {
+    "sulu_context_get": ["sulu.context.read",False,False],
+    "render_jobs_list": ["sulu.render.read",False,False],
+    "render_job_get": ["sulu.render.read",False,False],
+    "render_job_logs_list": ["sulu.render.logs.read",False,False],
+    "render_capacity_get": ["sulu.render.read",False,False],
+    "render_outputs_list": ["sulu.render.outputs.read",False,False],
+    "render_output_preview": ["sulu.render.outputs.read",False,False],
+    "render_output_read_text": ["sulu.render.outputs.read",False,False],
+    "render_output_read_range": ["sulu.render.outputs.read",False,False],
+    "render_output_download_prepare": ["sulu.render.outputs.read",False,False],
+    "render_operation_get": ["",False,False],
+    "render_upload_prepare": ["sulu.render.submit",True,False],
+    "render_upload_finalize": ["sulu.render.submit",True,False],
+    "render_job_quote": ["sulu.render.submit",False,False],
+    "render_job_submit": ["sulu.render.submit",True,False],
+    "render_job_duplicate": ["sulu.render.submit",True,False],
+    "render_job_template_update": ["sulu.render.control",True,False],
+    "render_job_pause": ["sulu.render.control",True,False],
+    "render_job_resume": ["sulu.render.control",True,False],
+    "render_tasks_retry": ["sulu.render.control",True,False],
+    "render_jobs_delete": ["sulu.render.delete",True,True],
+    "render_capacity_quote": ["sulu.render.capacity",False,False],
+    "render_capacity_set": ["sulu.render.capacity",True,False],
+}
+CANDIDATE_SCOPES = [
+    "sulu.context.read",
+    "sulu.render.read",
+    "sulu.render.logs.read",
+    "sulu.render.outputs.read",
+    "sulu.render.submit",
+    "sulu.render.control",
+    "sulu.render.delete",
+    "sulu.render.capacity",
+]
+CANDIDATE_PROTOCOLS = [
+    "2026-07-28",
+    "2025-11-25",
+    "2025-06-18",
+]
+CANDIDATE_HTTP_ROUTES = [
+    ["POST","/mcp","mcp_client","sulu-render"],
+    ["GET","/.well-known/oauth-protected-resource","public","sulu-render"],
+    ["GET","/.well-known/oauth-protected-resource/mcp","public","sulu-render"],
+    ["GET","/transfers/{session}","mcp_client","sulu-render"],
+    ["HEAD","/transfers/{session}","mcp_client","sulu-render"],
+    ["PUT","/transfers/{session}","mcp_client","sulu-render"],
+    ["POST","/api/render/v1/tools/{tool}","first_party","sulu-render"],
+    ["GET","/api/render/v1/browser/jobs/{org}","first_party","sulu-render"],
+    ["GET","/api/render/v1/browser/jobs/{org}/{job}","first_party","sulu-render"],
+    ["GET","/api/render/v1/transfers/{session}","first_party","sulu-render"],
+    ["HEAD","/api/render/v1/transfers/{session}","first_party","sulu-render"],
+    ["PUT","/api/render/v1/transfers/{session}","first_party","sulu-render"],
+    ["POST","/api/oauth/v1/identity/assertion","first_party","sulu-api"],
+    ["GET","/api/oauth/v1/grants","first_party","sulu-api"],
+    ["POST","/api/oauth/v1/grants/revoke","first_party","sulu-api"],
+    ["POST","/api/usernames/availability","public","sulu-api"],
+    ["POST","/api/projects/create","first_party","sulu-api"],
+    ["GET","/api/projects/operations/{id}","first_party","sulu-api"],
+]
+CANDIDATE_LEGACY_CLOSURES = [
+    {"method":"POST","path":"/api/farm/{org_id}/jobs","replacement":"render_job_submit"},
+    {"method":"PATCH","path":"/api/jobs/{org_id}/{job_id}","replacement":"render_job_template_update"},
+    {"method":"POST","path":"/api/jobs/{org_id}/{job_id}/duplicate","replacement":"render_job_duplicate"},
+    {"method":"PUT","path":"/api/render/capacity/{org_id}","replacement":"render_capacity_set"},
+    {"method":"GET","path":"/api/farm_status/{org_id}","replacement":"render_capacity_get"},
+    {"method":"POST","path":"/farm/{org_id}/api/job_status","replacement":"render_job_pause / render_job_resume"},
+    {"method":"POST","path":"/farm/{org_id}/api/delete_job","replacement":"render_jobs_delete"},
+    {"method":"POST","path":"/farm/{org_id}/api/task_status_many","replacement":"render_tasks_retry"},
+]
+CANDIDATE_COLLECTION_OVERRIDES = [
+    {"name":"users","closed_operations":["anonymous-list"],"replacement":"POST /api/usernames/availability"},
+    {"name":"projects","closed_operations":["raw-create"],"replacement":"POST /api/projects/create"},
+    {"name":"jobs","closed_operations":["raw-create","raw-update","raw-delete"],"replacement":"confirmed render tools"},
+]
+CANDIDATE_EXCLUSIONS = [
+    "administrator",
+    "fleet",
+    "workstation",
+    "production_tracker",
+    "account_administration",
+    "project_creation",
+    "general_storage",
+    "billing_purchase",
+    "arbitrary_api",
+    "standalone_render_cancel",
+]
 PRIVATE_TERM_HASHES = {
     "0b88383acb43b5c6d3f86c074662dbd42a61a8d4093f6900b467aaedfceaaf39",
     "0cd8666848bf286d951c3d230e8b6e092fde03c3a080e3454467e496e7b14e78",
@@ -285,6 +372,9 @@ class Validator:
             return
         if manifest.get("version") != 1:
             self.error(path, "version must be 1")
+        if manifest.get("baseline_status") != "historical_inventory_not_live_verification":
+            self.error(path, "baseline must remain an explicitly historical inventory")
+        self.validate_candidate_manifest(path, manifest.get("candidate_user_mcp"))
         declared_counts = manifest.get("expected_counts")
         if declared_counts != PUBLIC_SURFACE_COUNTS:
             self.error(path, "expected_counts does not match the public API inventory")
@@ -351,6 +441,71 @@ class Validator:
                         path,
                         f"{section}[{index}] evidence does not mention {needle!r}",
                     )
+
+    def validate_candidate_manifest(self, path: Path, candidate: Any) -> None:
+        """Closed candidate contract, separate from the historical public API.
+
+        The cross-repository source gate compares these declarations with the
+        implemented tool registry. This local check also keeps every route
+        documented without expanding the public surface through inventory.
+        """
+        if not isinstance(candidate, dict):
+            self.error(path, "candidate_user_mcp must be an object")
+            return
+        if (candidate.get("status") != "not_deployed" or candidate.get("public_enabled") is not False
+                or candidate.get("scope") != "user_render_only"):
+            self.error(path, "candidate must remain undeployed, disabled and user-render-only")
+        if candidate.get("protocol_versions") != CANDIDATE_PROTOCOLS:
+            self.error(path, "candidate protocol revisions differ from the closed contract")
+        if candidate.get("scopes") != CANDIDATE_SCOPES:
+            self.error(path, "candidate must declare exactly the eight approved scopes")
+        entries = candidate.get("tools")
+        if not isinstance(entries, list):
+            self.error(path, "candidate tools must be a list")
+            entries = []
+        names = []
+        guide = ROOT / "skills/sulu-render/references/user-mcp.md"
+        guide_text = guide.read_text(encoding="utf-8") if guide.is_file() else ""
+        for entry in entries:
+            if not isinstance(entry, dict):
+                self.error(path, "candidate tool must be an object")
+                continue
+            name = entry.get("name")
+            names.append(name)
+            expected = CANDIDATE_TOOLS.get(name) if isinstance(name, str) else None
+            if (expected is None or [entry.get("scope"), entry.get("mutation"), entry.get("destructive")] != expected
+                    or type(entry.get("mutation")) is not bool or type(entry.get("destructive")) is not bool
+                    or entry.get("skill") != "sulu-render"):
+                self.error(path, f"candidate tool contract differs: {name!r}")
+            if name == "render_operation_get" and entry.get("scope_mode") != "original_operation":
+                self.error(path, "operation polling requires its original operation scope")
+            if not isinstance(name, str) or f"`{name}`" not in guide_text:
+                self.error(path, f"candidate tool lacks public guide evidence: {name!r}")
+        if len(names) != len(CANDIDATE_TOOLS) or sorted(str(name) for name in names) != sorted(CANDIDATE_TOOLS):
+            self.error(path, "candidate must contain exactly the 23 approved tools without duplicates")
+        routes = candidate.get("http_routes")
+        if not isinstance(routes, list):
+            self.error(path, "candidate HTTP routes must be a list")
+            routes = []
+        declared_routes = []
+        for entry in routes:
+            if not isinstance(entry, dict):
+                self.error(path, "candidate HTTP route must be an object")
+                continue
+            declared_routes.append([entry.get(key) for key in ("method", "path", "audience", "skill")])
+            if entry.get("evidence") != "skills/sulu-render/references/user-mcp.md":
+                self.error(path, "candidate routes must cite their maintained public contract")
+            needle = f"{entry.get('method')} {entry.get('path')}"
+            if f"`{needle}`" not in guide_text:
+                self.error(path, f"candidate route lacks public guide evidence: {needle!r}")
+        if declared_routes != CANDIDATE_HTTP_ROUTES:
+            self.error(path, "candidate HTTP route inventory differs from the closed user surface")
+        if candidate.get("closed_legacy_routes") != CANDIDATE_LEGACY_CLOSURES:
+            self.error(path, "candidate legacy route closure inventory differs")
+        if candidate.get("collection_overrides") != CANDIDATE_COLLECTION_OVERRIDES:
+            self.error(path, "candidate collection closure inventory differs")
+        if candidate.get("excluded_capabilities") != CANDIDATE_EXCLUSIONS:
+            self.error(path, "candidate capability exclusions differ")
 
     def validate_blender_submission_coordination(self) -> None:
         render_skill = SKILLS / "sulu-render" / "SKILL.md"

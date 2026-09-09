@@ -32,6 +32,10 @@ and Sulu Market workflows.
 
 ## Authenticate and establish identity
 
+For the Sulu User MCP, use its discovered OAuth authorization flow instead of
+the device-link flow below. Never send an account session to the MCP service.
+The human reviews scopes and can revoke access through Connected agents.
+
 Prefer the device-link flow for an agent:
 
 ```http
@@ -138,6 +142,11 @@ Organization and project creation can provision resources. Show the exact
 name, purpose, and owning organization before creating them. Patch only
 documented mutable settings. Membership and role changes require the specific
 capability shown by the current API state.
+
+In the coordinated release, project creation uses `POST /api/projects/create`
+with an explicit organization and UUID idempotency key. Poll
+`GET /api/projects/operations/{id}` after acceptance; do not create a second
+project after a lost response. Project creation is not an MCP capability.
 
 Project deletion can destroy its storage and disconnect production or render
 work. Organization deletion can affect every project, balance, production,

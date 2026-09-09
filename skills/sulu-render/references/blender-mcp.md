@@ -4,6 +4,12 @@ Use this workflow when Blender is open, Blender MCP is connected, and the Sulu
 Blender add-on is enabled. It is the preferred path for submitting the current
 scene because each component keeps the responsibility it understands.
 
+For an explicitly selected coordinated-release environment, the
+[User MCP contract](user-mcp.md) governs scope, receipts, uploads, confirmation,
+job controls and outputs. The add-on owns that coordinated path even while
+external MCP access is disabled. The legacy direct API fallback below does not
+apply after cutover.
+
 ## Contents
 
 - [Division of responsibility](#division-of-responsibility)
@@ -47,8 +53,8 @@ function imports.
 
 ## Readiness gate
 
-Complete this gate before reading storage credentials or preparing a billable
-submission:
+Complete this gate before preparing a billable submission. Coordinated render
+clients do not obtain project storage credentials:
 
 1. Confirm that Blender MCP advertises a scene-inspection capability and that
    a read-only scene call succeeds against the intended Blender instance.
@@ -132,11 +138,16 @@ limited to `bpy` property access plus the registered operator call.
 
 ## Direct API fallback
 
-Use the raw storage and render APIs when Blender or the Sulu add-on is
+Only in an explicitly selected legacy environment, use the raw storage and
+render APIs when Blender or the Sulu add-on is
 unavailable, when the workflow is deliberately headless, or when the human
 explicitly requests a custom client. In that path, the agent owns schema
 registration, dependency completeness, input transfer, payload construction,
 submission, and UUID reconciliation.
+
+In a coordinated-release environment, deliberate headless clients use exact
+upload sessions, receipts and confirmed semantic tools instead. A failed
+coordinated operation must never be reissued through the legacy API.
 
 Do not mix paths within one submission. Once the add-on path dispatches, use
 the API only to observe and reconcile that job.

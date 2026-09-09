@@ -120,9 +120,11 @@ for a weaker class never satisfies a stronger one.
   it never proves that replaying an ambiguous write is safe.
 - List responsibly: use filters, pagination, and `skipTotal` where available
   instead of pulling entire collections repeatedly.
-- Uploads and downloads use presigned URLs and scoped storage credentials.
+- Legacy account APIs may use presigned URLs and scoped storage credentials.
   Treat them as secrets: never log them, never share them, never store them
-  beyond the operation they were issued for.
+  beyond the operation they were issued for. The coordinated User MCP instead
+  uses opaque transfer links with authorization in HTTP headers; never obtain
+  legacy storage credentials as a fallback for an MCP transfer failure.
 
 ## 6. Credentials and privacy
 

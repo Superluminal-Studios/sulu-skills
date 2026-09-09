@@ -5,6 +5,24 @@ description: Submit and manage Blender render jobs on the Superluminal (Sulu) re
 
 # Sulu render
 
+## User MCP release candidate
+
+For an explicitly selected coordinated-release environment, use
+[the User MCP contract](references/user-mcp.md) for rendering and artifacts,
+including first-party clients when external MCP access is still disabled.
+That contract supersedes the legacy raw submission, storage credentials,
+source URL, edit, control and capacity instructions below. Do not fall back to
+legacy writes when a coordinated request fails. The candidate has not been
+declared publicly deployed by this guide; use only the environment the human
+selected. The Sulu Blender add-on remains the owner of scene preparation.
+
+## Legacy account API only
+
+The remaining sections and legacy references apply only to an explicitly
+selected environment that has not cut over to the coordinator. They are not
+fallback instructions for a failed or unavailable coordinated request. A
+missing MCP connection is not evidence that legacy submission is permitted.
+
 Use this skill as the coordination and API guide for render work. The API base is
 `https://api.superlumin.al`. Send a normal Sulu user token as
 `Authorization: <token>` on every authenticated request.
@@ -29,9 +47,10 @@ add-on-private helpers, or run transfer tooling directly. Do not submit the
 same job again through the raw API after invoking the add-on.
 
 Read the [combined Blender workflow](references/blender-mcp.md) before using
-Blender MCP for submission. Use direct storage and render API calls as the
-fallback for deliberate headless/custom-client work or when the add-on is
-unavailable.
+Blender MCP for submission. Use direct storage and render API calls only in
+the legacy environment as the fallback for deliberate headless/custom-client
+work or when the add-on is unavailable. Coordinated headless clients use
+upload receipts and the tools in the User MCP contract instead.
 
 ## Readiness gate
 

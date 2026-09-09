@@ -35,12 +35,14 @@ Canonical security route spellings:
 | `GET` | `/api/collections/users/records/{self_id}` | User | Read the signed-in user |
 | `PATCH` | `/api/collections/users/records/{self_id}` | User | Update the signed-in user |
 | `DELETE` | `/api/collections/users/records/{self_id}` | User | Delete the signed-in user |
-| `GET` | `/api/collections/users/records` | Public | Query public user records; never enumerate |
+| `GET` | `/api/collections/users/records` | Anonymous listing closed in coordinated release | Never use for user discovery or availability |
 | `POST` | `/api/collections/users/records` | Public with human verification | Browser signup is the supported path |
 
-Public listability is not consent to collect profiles. View, update, and delete
-only the signed-in user's own record. Use exact filters, minimal `fields`, and
-the smallest result count.
+View, update, and delete only the signed-in user's own record. In the
+coordinated release, `POST /api/usernames/availability` accepts
+`{user_name: "<chosen-name>"}` and returns only `{available: boolean}`.
+Availability does not reserve a name: normalized uniqueness is enforced when
+the account is saved. Do not fall back to a user listing on failure.
 
 Authentication is allowed only when the user is verified. Generic collection errors must
 not be used for existence probing.
