@@ -18,12 +18,18 @@ GETs mint credentials or synchronize destructive external state.
 | Private mutation | Edit own profile, wishlist, private production task | Show the target and requested delta; re-read afterward |
 | Outward/public | Support or seller message, comment/mention, review/response, seller profile, submit/publish/unpublish | Draft exact content and audience; human confirms before send |
 | Credential issuance/rotation | File/storage credentials, repository or asset-library credential, OAuth link, Connect session | Confirm purpose; never print; rotation requires explicit notice of what stops working |
-| Money | Render submit/duplicate/capacity, checkout, top-up, auto top-up, price/discount, refund | Exact target and amount/ceiling; current-session human approval; no automatic retry |
+| Credit purchase and commerce | Checkout, credit top-up, auto top-up, market purchase, price/discount, refund | Exact target and amount; current-session human approval; no automatic retry |
+| Render spend | Sulu MCP submit, batch submit, duplicate, retry, resume | Within the project authority the human set at consent; relay `approval_required`; retry only with the same idempotency key |
+| Render spend without authority | Legacy API or add-on submission, a Sulu MCP connection with no project budget | Project, frames and estimate stated; one current-session yes; no automatic retry |
+| Capacity and render deletion | Sulu MCP capacity change, job deletion | Execute with admin access in the grant; without it the human acts or reconnects with admin access |
 | Destructive/irreversible | Account/project/product/version/media delete, prune, entitlement-affecting commit | Inventory dependents/backups; name consequences; fresh explicit confirmation |
 | Human-secret interface | Stripe payment/onboarding, OAuth/provider consent, passwords, tax/bank/card data | Human completes it; agent never requests, enters, or relays the secrets |
 
 When multiple classes apply, use every applicable gate. A previous confirmation
-for a weaker class never satisfies a stronger one.
+for a weaker class never satisfies a stronger one. The one exception is render
+work through Sulu MCP: inside a project authority, the render spend, capacity
+and render deletion rows replace the general money and destructive gates,
+because the human already set those limits at consent.
 
 ## 1. You act as one account, inside its own walls
 
@@ -58,22 +64,30 @@ for a weaker class never satisfies a stronger one.
   testing or distribution. An accepted project package is not evidence that
   such use is permitted.
 
-## 2. Money moves only with explicit human approval
+## 2. Money: purchases need a yes, render spend stays inside the authority
 
-- Before any call that spends, commits, or redirects money, stop and get the
-  human's explicit go-ahead for that specific action and amount. This covers:
-  buying render credits (checkout sessions), enabling or changing auto top-up,
-  market purchases (including "free" checkouts, which create real orders),
-  requesting refunds, and changing prices or discounts on products you sell.
-- Approval is scoped to the exact action, target, amount, and current plan in
-  this conversation. It does not authorize future top-ups, retries, duplicated
-  jobs, a larger frame range, a different cart, or unattended spending.
-- Render jobs spend real money from the organization balance while they run.
-  Before submitting, estimate the cost (frame count × expected render time ×
-  the current rate) and confirm the submission with the human unless they have
-  already approved that job at that scale in this session. Never resubmit a
-  failed or edited job in a loop. State clearly that the estimate is not a hard
-  server-side cap and include a reasonable contingency.
+- Buying is always the human's decision. Before any call that buys, commits,
+  or redirects money, stop and get the human's explicit go-ahead for that
+  specific action and amount. This covers buying render credits (checkout
+  sessions), enabling or changing auto top-up, market purchases (including
+  "free" checkouts, which create real orders), requesting refunds, and
+  changing prices or discounts on products you sell.
+- Purchase approval is scoped to the exact action, target, amount, and current
+  plan in this conversation. It does not authorize future top-ups, a different
+  cart, or unattended spending.
+- Render spend through Sulu MCP happens inside the project authority the human
+  set at consent: organization, projects, budget, optional per-job maximum and
+  end date. Inside it, submit, duplicate, retry, and resume without asking.
+  The server reserves each job against the budget. When a call returns
+  `approval_required`, nothing was spent: give the human the `approval_url`
+  and repeat the same call with the same idempotency key after they raise the
+  budget. Never work around the budget with another path or another account.
+- Render spend without an authority (the legacy account API, the Sulu Blender
+  add-on, or a Sulu MCP connection that has no project budget) has no
+  server-side cap. Before that submission, state the project, frames, and
+  estimate with its uncertainty, and get one yes in this session.
+- Never resubmit a failed or edited job in a loop, and never retry a write
+  with a new idempotency key to recover a lost response.
 - Never request, enter, relay, or store card numbers, bank details, tax IDs,
   passwords, or one-time codes. Sulu can use a browser redirect or Stripe
   embedded checkout depending on the flow. The human completes every payment
@@ -84,9 +98,13 @@ for a weaker class never satisfies a stronger one.
 ## 3. Destructive and public actions need a named target and a yes
 
 - Deleting an organization, deleting or unpublishing a market product,
-  deleting product versions, media, or wiki pages, cancelling paid work, and
-  anything else that destroys data or withdraws something people rely on:
-  name the exact target to the human and get a yes first.
+  deleting product versions, media, or wiki pages, and anything else that
+  destroys data or withdraws something people rely on: name the exact target
+  to the human and get a yes first.
+- Render job deletion and capacity changes through Sulu MCP need admin access
+  in the grant, which the human turns on at consent. With it, delete only the
+  jobs the request names or clearly means. Without it, ask the human to act or
+  to reconnect with admin access.
 - Publishing is outward-facing. Submitting a product for review, publishing a
   version, posting a review or a seller response, and sending a marketplace
   or support message all reach other people. Draft first, confirm, then send.
@@ -122,9 +140,10 @@ for a weaker class never satisfies a stronger one.
   instead of pulling entire collections repeatedly.
 - Legacy account APIs may use presigned URLs and scoped storage credentials.
   Treat them as secrets: never log them, never share them, never store them
-  beyond the operation they were issued for. The coordinated User MCP instead
-  uses opaque transfer links with authorization in HTTP headers; never obtain
-  legacy storage credentials as a fallback for an MCP transfer failure.
+  beyond the operation they were issued for. Sulu MCP transfer links take the
+  OAuth bearer in the `Authorization` header, and its signed upload targets and
+  download URLs are short-lived secrets too. Never obtain legacy storage
+  credentials as a fallback for a Sulu MCP transfer failure.
 
 ## 6. Credentials and privacy
 
@@ -148,4 +167,7 @@ for a weaker class never satisfies a stronger one.
 The API lets an account do real commerce: spend its balance, sell to real
 customers, message real people. If an action is ambiguous, irreversible, or
 touches anyone outside the account, the default is to stop and ask the human.
-Skills in this repo assume this rule even where they don't restate it.
+Render work inside a Sulu MCP project authority is the exception the human
+already answered: act on the request, and ask again only where the render
+skill says to. Skills in this repo assume this rule even where they don't
+restate it.

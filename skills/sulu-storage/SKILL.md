@@ -8,14 +8,14 @@ description: Use Superluminal (Sulu) project and marketplace storage safely. Pre
 Use [sulu-api](../sulu-api/SKILL.md) for authentication and follow the
 [shared guardrails](../../GUARDRAILS.md).
 
-For render inputs and outputs in an explicitly selected coordinated-release
-environment, use the [User MCP transfer contract](../sulu-render/references/user-mcp.md).
-It uses opaque authorized sessions and generation-bound catalog references;
-the legacy project credentials, physical layouts and presigning instructions
-below do not apply to those render transfers. Never fall back to them after a
-coordinated failure. This candidate guidance is not a deployment announcement.
+For render inputs and outputs, use the
+[Sulu MCP transfer contract](../sulu-render/references/user-mcp.md). It uses
+exact signed upload targets, authorized transfer sessions, short-lived signed
+download URLs and generation-bound output references; the legacy project
+credentials, physical layouts and presigning instructions below do not apply
+to those render transfers. Never fall back to them after a Sulu MCP failure.
 Marketplace and general project storage remain separate account workflows,
-not capabilities of the User MCP.
+not capabilities of Sulu MCP.
 
 Sulu has two separate storage systems:
 
@@ -38,10 +38,10 @@ The add-on coordinates schema capture, dependency preparation, upload mode,
 transfer configuration, and job registration as one compatible operation.
 Follow [sulu-render](../sulu-render/SKILL.md) for approval and submission.
 
-Use the project-storage API below for deliberate legacy headless/custom-client
-submission, legacy output retrieval, or separately authorized general storage
-work outside an active add-on flow. Coordinated headless rendering uses the
-User MCP transfer contract instead.
+Use the project-storage API below only for an explicitly requested legacy
+integration, legacy output retrieval, or separately authorized general storage
+work outside an active add-on flow. Headless rendering uses the Sulu MCP
+transfer contract and the `sulu-render` SDK instead.
 Never combine manual and add-on transfers for the same submission.
 
 ## Project render storage

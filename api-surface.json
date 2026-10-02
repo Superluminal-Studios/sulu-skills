@@ -2,15 +2,32 @@
   "version": 1,
   "audited_at": "2026-07-29",
   "baseline_status": "historical_inventory_not_live_verification",
-  "candidate_user_mcp": {
-    "status": "not_deployed",
-    "public_enabled": false,
+  "user_mcp": {
+    "status": "production",
+    "public_enabled": true,
+    "endpoint": "https://mcp.superlumin.al/mcp",
     "scope": "user_render_only",
+    "generated": "Generated from the released gateway tool contract. Do not edit by hand.",
     "protocol_versions": [
       "2026-07-28",
       "2025-11-25",
       "2025-06-18"
     ],
+    "default_scope": "sulu.render",
+    "scope_profiles": {
+      "sulu.render": [
+        "sulu.context.read",
+        "sulu.render.read",
+        "sulu.render.logs.read",
+        "sulu.render.outputs.read",
+        "sulu.render.submit",
+        "sulu.render.control"
+      ],
+      "sulu.render.admin": [
+        "sulu.render.delete",
+        "sulu.render.capacity"
+      ]
+    },
     "scopes": [
       "sulu.context.read",
       "sulu.render.read",
@@ -22,51 +39,77 @@
       "sulu.render.capacity"
     ],
     "tools": [
-      {"name":"sulu_context_get","scope":"sulu.context.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_jobs_list","scope":"sulu.render.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_get","scope":"sulu.render.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_logs_list","scope":"sulu.render.logs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_capacity_get","scope":"sulu.render.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_outputs_list","scope":"sulu.render.outputs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_output_preview","scope":"sulu.render.outputs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_output_read_text","scope":"sulu.render.outputs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_output_read_range","scope":"sulu.render.outputs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_output_download_prepare","scope":"sulu.render.outputs.read","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_operation_get","scope":"","mutation":false,"destructive":false,"skill":"sulu-render","scope_mode":"original_operation"},
-      {"name":"render_upload_prepare","scope":"sulu.render.submit","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_upload_finalize","scope":"sulu.render.submit","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_quote","scope":"sulu.render.submit","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_submit","scope":"sulu.render.submit","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_duplicate","scope":"sulu.render.submit","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_template_update","scope":"sulu.render.control","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_pause","scope":"sulu.render.control","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_resume","scope":"sulu.render.control","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_tasks_retry","scope":"sulu.render.control","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_jobs_delete","scope":"sulu.render.delete","mutation":true,"destructive":true,"skill":"sulu-render"},
-      {"name":"render_capacity_quote","scope":"sulu.render.capacity","mutation":false,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_capacity_set","scope":"sulu.render.capacity","mutation":true,"destructive":false,"skill":"sulu-render"}
+      {"name":"sulu_context_get","scope":"sulu.context.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_runtimes_list","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_project_ensure","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_jobs_list","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_get","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_watch","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_live_preview","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_settings_schema_get","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_logs_list","scope":"sulu.render.logs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_capacity_get","scope":"sulu.render.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_outputs_list","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_outputs_export","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_output_preview","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_output_read_text","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_output_read_range","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_output_download_prepare","scope":"sulu.render.outputs.read","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_operation_get","scope":"","profile":"","mutation":false,"destructive":false,"skill":"sulu-render","scope_mode":"original_operation"},
+      {"name":"render_upload_prepare","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_upload_finalize","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_quote","scope":"sulu.render.submit","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_submit","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_jobs_submit_batch","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_duplicate","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_template_update","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_pause","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_resume","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_tasks_retry","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_jobs_delete","scope":"sulu.render.delete","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"},
+      {"name":"render_capacity_quote","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":false,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_capacity_set","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"}
     ],
+    "planned_tools": [
+      {"name":"render_job_cancel","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render","release":"next"}
+    ],
+    "job_statuses": [
+      "queued",
+      "running",
+      "paused",
+      "completed",
+      "failed",
+      "cancelled",
+      "deleted",
+      "unknown"
+    ],
+    "planned_job_fields": [],
     "http_routes": [
       {"method":"POST","path":"/mcp","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/.well-known/oauth-protected-resource","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/.well-known/oauth-protected-resource/mcp","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
-      {"method":"GET","path":"/transfers/{session}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/.well-known/sulu-sdk","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/sdk/manifest.json","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/sdk/README.md","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/sdk/RENDER_SUBMISSION.md","audience":"public","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"POST","path":"/upload-capabilities/{capability}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"POST","path":"/sdk/upload-sessions/{upload_session}/{sdk_capability}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"HEAD","path":"/transfers/{session}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
-      {"method":"PUT","path":"/transfers/{session}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/transfers/{session}","audience":"mcp_client","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"POST","path":"/api/render/v1/tools/{tool}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/api/render/v1/browser/jobs/{org}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/api/render/v1/browser/jobs/{org}/{job}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
-      {"method":"GET","path":"/api/render/v1/transfers/{session}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"HEAD","path":"/api/render/v1/transfers/{session}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"GET","path":"/api/render/v1/transfers/{session}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"PUT","path":"/api/render/v1/transfers/{session}","audience":"first_party","skill":"sulu-render","evidence":"skills/sulu-render/references/user-mcp.md"},
-      {"method":"POST","path":"/api/oauth/v1/identity/assertion","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/api/oauth/v1/grants","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"POST","path":"/api/oauth/v1/grants/revoke","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
+      {"method":"POST","path":"/api/oauth/v1/grants/authority","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"POST","path":"/api/usernames/availability","audience":"public","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"POST","path":"/api/projects/create","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"},
       {"method":"GET","path":"/api/projects/operations/{id}","audience":"first_party","skill":"sulu-api","evidence":"skills/sulu-render/references/user-mcp.md"}
     ],
-    "closed_legacy_routes": [
+    "superseded_legacy_routes": [
       {"method":"POST","path":"/api/farm/{org_id}/jobs","replacement":"render_job_submit"},
       {"method":"PATCH","path":"/api/jobs/{org_id}/{job_id}","replacement":"render_job_template_update"},
       {"method":"POST","path":"/api/jobs/{org_id}/{job_id}/duplicate","replacement":"render_job_duplicate"},
@@ -79,7 +122,7 @@
     "collection_overrides": [
       {"name":"users","closed_operations":["anonymous-list"],"replacement":"POST /api/usernames/availability"},
       {"name":"projects","closed_operations":["raw-create"],"replacement":"POST /api/projects/create"},
-      {"name":"jobs","closed_operations":["raw-create","raw-update","raw-delete"],"replacement":"confirmed render tools"}
+      {"name":"jobs","closed_operations":["raw-create","raw-update","raw-delete"],"replacement":"Sulu MCP render tools"}
     ],
     "excluded_capabilities": [
       "administrator",
@@ -87,7 +130,6 @@
       "workstation",
       "production_tracker",
       "account_administration",
-      "project_creation",
       "general_storage",
       "billing_purchase",
       "arbitrary_api",

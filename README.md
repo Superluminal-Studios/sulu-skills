@@ -5,23 +5,57 @@
 > secret audit. These guides document variables and API contracts only; never
 > copy values from docs or `.secrets/discovered/` evidence.
 
-**Experimental.** Agent skills for the public Superluminal (Sulu) API at
-`https://api.superlumin.al`, with a preferred Blender MCP and Sulu add-on path
-for render submission.
+Agent skills for Superluminal (Sulu). Render work goes through the Sulu MCP
+server at `https://mcp.superlumin.al/mcp` (production). The public account API
+at `https://api.superlumin.al` covers accounts, billing, storage, production
+tracking and the market, and its skills remain experimental.
 
-Each skill contains a concise entrypoint, a detailed HTTP reference, and agent
-discovery metadata. The guides describe request methods, public paths, fields,
-response contracts, side effects, and approval boundaries without prescribing
-a programming language, command-line tool, or local file layout. The render
-guide additionally defines how Blender MCP should hand scene and transfer work
-to the Sulu add-on.
+Each skill contains a concise entrypoint, a detailed reference, and agent
+discovery metadata. The guides describe tools, request methods, public paths,
+fields, response contracts, side effects, and when to ask the human. The
+render guide also defines how Blender MCP, the `sulu-render` SDK and the Sulu
+add-on share scene and transfer work.
+
+## Connect Sulu MCP
+
+Sulu MCP uses OAuth sign-in in the browser; there is no API key. At consent
+the human picks an organization and projects and sets a budget. The agent then
+renders inside that authority without asking again.
+
+| Client | Connect |
+| --- | --- |
+| Claude Code | `claude mcp add --transport http sulu https://mcp.superlumin.al/mcp`, then run `/mcp` and sign in |
+| Codex | `codex mcp add sulu --url https://mcp.superlumin.al/mcp`, then `codex mcp login sulu` |
+| Cursor | Open `cursor://anysphere.cursor-deeplink/mcp/install?name=sulu&config=eyJ1cmwiOiJodHRwczovL21jcC5zdXBlcmx1bWluLmFsL21jcCJ9` |
+| Claude.ai and Claude Desktop | Settings, Connectors, Add custom connector, URL `https://mcp.superlumin.al/mcp` |
+| Any MCP client with a project config | Add the server to `.mcp.json` as shown below |
+
+```json
+{"mcpServers":{"sulu":{"type":"http","url":"https://mcp.superlumin.al/mcp"}}}
+```
+
+For local packaging and bulk downloads, use the `sulu-render` SDK from
+`https://mcp.superlumin.al/.well-known/sulu-sdk`:
+
+```bash
+sulu-render login
+sulu-render context
+sulu-render jobs
+sulu-render submit --frames 1-50 <scene>
+sulu-render download --job <job> --output <directory>
+```
+
+`context`, `jobs` and `submit --frames` need SDK 0.3 or later. Run
+`sulu-render <command> --help` for every option. The
+[Sulu MCP guide](skills/sulu-render/references/user-mcp.md) lists every tool,
+scope, lifetime and route.
 
 ## Skills
 
 | Skill | Covers |
 | --- | --- |
 | `sulu-api` | Authentication, shared request rules, account security, organizations, projects, billing, referrals, and support |
-| `sulu-render` | Blender MCP and add-on submission, API fallback, cost estimation, monitoring, editing, duplication, and results |
+| `sulu-render` | Sulu MCP rendering within a project budget, Blender MCP and add-on coordination, monitoring, control, and output download |
 | `sulu-storage` | Add-on-managed render transfers, project storage access, output layout, and marketplace transfer sessions |
 | `sulu-production` | Production configuration, elements, tasks, revisions, review media, time, notifications, and planning |
 | `sulu-market` | Buying, delivery, reviews, seller onboarding, products, media, discounts, orders, and earnings |
@@ -32,9 +66,10 @@ explains how that inventory is organized.
 
 ## Installation
 
-Install only the skills needed for the workflows being tested. For Blender
-render submission, install `sulu-api`, `sulu-render`, and `sulu-storage`
-together. `sulu-production` and `sulu-market` can be installed independently.
+Install only the skills needed for the workflows being tested. With Sulu MCP,
+`sulu-render` alone covers render work. For the add-on path and legacy
+integrations, install `sulu-api`, `sulu-render`, and `sulu-storage` together.
+`sulu-production` and `sulu-market` can be installed independently.
 
 ### Ask an agent to install a skill
 
@@ -81,35 +116,33 @@ that skill is already installed instead of overwriting it. Reload skill
 discovery or start a new agent session after installation.
 
 Installing these guides does not grant Sulu access or install external
-integrations. Blender render testing also requires an authenticated Sulu
-account, a connected Blender MCP server, the trusted Sulu Blender add-on, and a
-saved Blender project.
+integrations. Rendering also requires a Sulu account connected through
+[Connect Sulu MCP](#connect-sulu-mcp) and a saved Blender project.
 
 ## Render submissions
 
-Submitting Blender jobs is the primary workflow. When Blender MCP and the Sulu
-Blender add-on are available, agents should use them together: Blender MCP
-inspects and configures the live scene, the add-on captures the Blender schema,
-prepares dependencies, performs transfers, and registers the job, and the Sulu
-API supplies scope, pricing, approval, monitoring, and reconciliation.
+Submitting Blender jobs is the primary workflow. With Sulu MCP connected, the
+agent resolves the deliverable from the request and the scene, packages and
+uploads with the `sulu-render` SDK, submits, follows the job, and downloads
+the outputs. It does not ask again inside the project authority, never adds a
+test or validation render, and finishes when the requested outputs exist
+locally.
 
-Before any credential, upload, or billable action, the render skill requires a
-successful read-only MCP inspection, a saved Blender project, registered Sulu
-add-on operations, refreshed proof of the exact requested identity, and a
-matching add-on/API project.
-
-Direct storage and render API submission remains documented for deliberate
-headless or custom-client work. An agent must choose one submission path and
-must not dispatch the same billable job through both the add-on and raw API.
-The guide does not recommend a separate validation render or use concrete
-local filenames.
+Blender MCP inspects and saves the live scene. The Sulu Blender add-on remains
+available when the human asks for it; that path runs outside the project
+budget, so the agent asks once before submitting. Before that it needs a
+successful read-only MCP inspection of the saved scene. An agent must choose
+one submission path and must not dispatch the same billable job through both
+the add-on and Sulu MCP. The legacy account API's render writes are
+documented for older integrations only.
 
 ## Safety
 
 Every skill follows [GUARDRAILS.md](GUARDRAILS.md). Agents act only for the
-authenticated user, stay within confirmed organization and project scope, ask
-before spending money or making consequential changes, protect credentials,
-and use only endpoints documented for the requested workflow.
+authenticated user and stay within the organization, projects and budget the
+human approved. They ask before buying credits, before spending without a
+project authority, and before consequential changes outside it. They protect
+credentials and use only tools and endpoints documented for the workflow.
 
 ## Validation
 
@@ -121,5 +154,7 @@ python3 -m unittest discover -s tests -v
 ```
 
 The validator checks skill structure, discovery metadata, references, links,
-placeholders, syntax, API-guide style, and complete ownership of the documented
-public API inventory.
+placeholders, syntax, API-guide style, connect commands, and complete
+ownership of the documented public API inventory. The Sulu MCP tool table,
+statuses and error codes are generated from the released server contract; do
+not edit the marked blocks by hand.

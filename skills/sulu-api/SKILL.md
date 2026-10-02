@@ -32,9 +32,12 @@ and Sulu Market workflows.
 
 ## Authenticate and establish identity
 
-For the Sulu User MCP, use its discovered OAuth authorization flow instead of
-the device-link flow below. Never send an account session to the MCP service.
-The human reviews scopes and can revoke access through Connected agents.
+For Sulu MCP (`https://mcp.superlumin.al/mcp`), use the client's OAuth sign-in
+instead of the device-link flow below; the
+[render skill](../sulu-render/SKILL.md) lists the connect command per client.
+Never send an account session to the MCP service. At consent the human sets
+the organization, projects and budget, and can change or revoke the grant
+under Connected agents.
 
 Prefer the device-link flow for an agent:
 
@@ -143,10 +146,10 @@ name, purpose, and owning organization before creating them. Patch only
 documented mutable settings. Membership and role changes require the specific
 capability shown by the current API state.
 
-In the coordinated release, project creation uses `POST /api/projects/create`
-with an explicit organization and UUID idempotency key. Poll
-`GET /api/projects/operations/{id}` after acceptance; do not create a second
-project after a lost response. Project creation is not an MCP capability.
+Project creation uses `POST /api/projects/create` with an explicit
+organization and UUID idempotency key. Poll `GET /api/projects/operations/{id}`
+after acceptance; do not create a second project after a lost response. Inside
+a Sulu MCP project authority, agents use `render_project_ensure` instead.
 
 Project deletion can destroy its storage and disconnect production or render
 work. Organization deletion can affect every project, balance, production,

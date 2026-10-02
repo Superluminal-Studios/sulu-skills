@@ -1,6 +1,13 @@
-# Sulu render API reference
+# Sulu render API reference (legacy account API)
 
 Base URL: `https://api.superlumin.al`.
+
+Agents render through Sulu MCP; see the [Sulu MCP contract](references/user-mcp.md).
+This reference covers the legacy account API: account reads, reconciliation of
+add-on submissions, and integrations that predate Sulu MCP. Its render writes
+have no budget and no idempotency key, so an agent uses them only when the
+human explicitly asks for a legacy integration, and then gets approval for
+each billable request.
 
 Use a normal Sulu user token in `Authorization` for `/api` routes.
 Farm passthrough routes instead use the organization-scoped render queue
@@ -9,6 +16,7 @@ credentials. Never mix or expose these credentials.
 
 ## Contents
 
+- [Legacy submission workflow](#legacy-submission-workflow)
 - [Submission](#submission)
 - [Jobs API](#jobs-api)
 - [Farm control](#farm-control)
@@ -16,7 +24,51 @@ credentials. Never mix or expose these credentials.
 - [Settings schemas](#settings-schemas)
 - [Collections](#collections)
 - [Error handling](#error-handling)
-- [Excluded surfaces](#excluded-surfaces)
+- [Scope boundary](#scope-boundary)
+
+## Legacy submission workflow
+
+This section applies only to an explicitly requested legacy integration. The
+Sulu add-on builds and registers its own compatible payload; do not duplicate
+it.
+
+### Input storage
+
+The service does not receive scene bytes. Upload inputs directly to the
+project's object storage using the temporary credentials returned by
+`project_storage`. Choose one input mode and keep it consistent with the job
+payload:
+
+- Project mode: upload the scene and dependencies under the selected project
+  prefix, plus a manifest object listing every relative input path.
+- Archive mode: upload one archive object containing the scene and all
+  dependencies.
+- Optional add-on bundles belong under the selected input job prefix.
+
+Set `input_job_id` to the uploaded input root. A new job normally uses its own
+fresh UUID. A re-render may reuse the resolved input root of an existing job
+after verifying it belongs to the same authorized project. Upload before
+submitting because workers can begin downloading immediately. Project storage
+is temporary; rendered objects are retained for seven days. See
+[the storage API guide](../sulu-storage/SKILL.md) for credential and object
+layout details.
+
+### Statuses and reconciliation
+
+Legacy job states include `queued`, `running`, `paused`, `finished`, `error`,
+`deleted`, and `cancelled`. `effective_status` can additionally report
+`blocked_funds` with the reason `low_funds`; inform the human instead of
+purchasing credits. Poll no faster than every ten seconds, back off on server
+errors, and honor `Retry-After`.
+
+The legacy submit and duplicate routes have no client idempotency key. After a
+timeout, transport failure, malformed response, or server error:
+
+1. Do not replay the request.
+2. Query the exact submitted UUID through the jobs API.
+3. Allow for mirror delay.
+4. If the outcome remains unclear, contact Sulu support or obtain approval for
+   a new request with a new UUID.
 
 ## Submission
 
