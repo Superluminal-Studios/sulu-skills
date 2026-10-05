@@ -1,10 +1,10 @@
-# sulu-skills Agent Guide
+# sulu-skills
 
-## Scope
-
-This repository contains guides for the public Sulu API and the Sulu MCP
-render server, Blender MCP and Sulu add-on coordination for render submission,
-machine-readable API ownership data, and documentation validation.
+Public guides for the Sulu API and the Sulu MCP render server, Blender MCP and
+Sulu add-on coordination for render submission, machine-readable API ownership
+data, and documentation validation.
+Superrepo rules (`../AGENTS.md`) apply: current branch only, no new branches or
+worktrees; stage exact paths, never `git add -A`; never print secrets; no deploys unless asked.
 
 ## Rules
 
