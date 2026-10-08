@@ -148,6 +148,12 @@ Reads one stored job and is the preferred submission-reconciliation endpoint.
 The response contains `job_data`, aggregate task maps, and placeholder
 farm-data fields. A new job can take time to appear in this mirror.
 
+New renders use the custom Blender 5.0, 5.1, 5.2 and 5.3 Alpha runtimes.
+Persistence defaults to `true`. Set `use_bserver: false` to start a fresh Blender
+process for each assigned batch. Both settings use native render stages and live
+samples. Persistence controls process reuse only. Existing jobs retain their
+stored setting when an update omits it.
+
 ### PATCH /api/jobs/{org_id}/{job_id}
 
 Edits a stored non-running, non-deleted job. It does not modify live farm work.
