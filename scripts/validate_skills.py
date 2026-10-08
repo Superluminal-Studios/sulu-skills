@@ -31,6 +31,14 @@ PILOT_RENDER_RE = re.compile(
     r"(?:\bpilot\b|\bone[- ]frame\b|\bsingle[- ]frame\b|start with one frame)",
     re.IGNORECASE,
 )
+# A validation render named in a sentence that does not forbid it.
+VALIDATION_RENDER_RE = re.compile(
+    r"\b(?:test|validation|minimal|trial|smoke|sanity|throwaway)"
+    r"(?: or validation)?[- ](?:render|job)s?\b",
+    re.IGNORECASE,
+)
+NEGATION_RE = re.compile(r"\b(?:never|not|no|without|instead of|don't|do not)\b", re.IGNORECASE)
+SENTENCE_START_RE = re.compile(r"(?:[.!?:]\s|\n\s*\n|\n\s*[-*\d|])")
 LOCAL_IMPLEMENTATION_RE = re.compile(
     r"(?:"
     r"\b(?:sulu_request|sulu_multipart|render_job)\.py\b"
@@ -115,6 +123,15 @@ USER_MCP_EXCLUSIONS = {
     "standalone_render_cancel": "render_job_cancel",
 }
 TOOL_NAME_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
+# Backticked names shaped like Sulu MCP tools; field names such as render_order do not match.
+TOOL_MENTION_RE = re.compile(
+    r"`(sulu_context_get|render_(?:job|jobs|task|tasks|output|outputs|upload|operation|"
+    r"capacity|project|runtimes|settings)_[a-z_]+)`"
+)
+CODE_SPAN_RE = re.compile(r"`([^`\n]+)`")
+FENCE_RE = re.compile(r"```[^\n]*\n(.*?)```", re.DOTALL)
+SDK_COMMAND_RE = re.compile(r"\bsulu-render[ \t]+([a-z][a-z-]*)([^\n]*)")
+FLAG_RE = re.compile(r"(?<![\w-])(--[a-z][a-z0-9-]*)")
 GENERATED_TOOLS_RE = re.compile(
     r"<!-- BEGIN GENERATED: tools -->(.*?)<!-- END GENERATED: tools -->",
     re.DOTALL,
@@ -319,6 +336,14 @@ class Validator:
                 path,
                 f"render guidance must not prescribe a validation render: {pilot.group(0)!r}",
             )
+        for match in VALIDATION_RENDER_RE.finditer(text):
+            starts = [boundary.end() for boundary in SENTENCE_START_RE.finditer(text, 0, match.start())]
+            sentence = text[starts[-1] if starts else 0:match.start()]
+            if not NEGATION_RE.search(sentence):
+                self.error(
+                    path,
+                    f"render guidance must not prescribe a validation render: {match.group(0)!r}",
+                )
         implementation = LOCAL_IMPLEMENTATION_RE.search(text)
         if implementation:
             self.error(
@@ -572,6 +597,47 @@ class Validator:
         if section.get("excluded_capabilities") != expected_exclusions:
             self.error(path, "user_mcp capability exclusions differ")
 
+    def validate_tool_mentions(self, path: Path, section: Any) -> None:
+        """Every tool a guide names exists; a next-release tool is named as one."""
+        if not isinstance(section, dict):
+            return
+        current = {entry.get("name") for entry in section.get("tools") or [] if isinstance(entry, dict)}
+        upcoming = {entry.get("name") for entry in section.get("planned_tools") or [] if isinstance(entry, dict)}
+        text = GENERATED_TOOLS_RE.sub("", path.read_text(encoding="utf-8"))
+        for paragraph in re.split(r"\n\s*\n", text):
+            for name in TOOL_MENTION_RE.findall(paragraph):
+                if name in current:
+                    continue
+                if name not in upcoming:
+                    self.error(path, f"names {name!r}, which is not a Sulu MCP tool")
+                elif "next release" not in paragraph.casefold():
+                    self.error(path, f"names {name!r} without saying it arrives in the next release")
+
+    def validate_sdk_commands(self, path: Path, sdk: Any) -> None:
+        """Every `sulu-render` command and flag a guide shows exists in the public SDK CLI."""
+        if not isinstance(sdk, dict) or not isinstance(sdk.get("commands"), dict):
+            return
+        commands, global_flags = sdk["commands"], set(sdk.get("global_flags") or [])
+        text = path.read_text(encoding="utf-8")
+        snippets = CODE_SPAN_RE.findall(FENCE_RE.sub("", text))
+        snippets += [line for block in FENCE_RE.findall(text) for line in block.splitlines()]
+        for snippet in snippets:
+            for command, rest in SDK_COMMAND_RE.findall(snippet):
+                if command not in commands:
+                    self.error(path, f"shows `sulu-render {command}`, which the SDK does not have")
+                    continue
+                for flag in FLAG_RE.findall(rest):
+                    if flag not in commands[command] and flag not in global_flags:
+                        self.error(path, f"shows `sulu-render {command} {flag}`, which the SDK does not accept")
+
+    def validate_sdk_inventory(self, path: Path, sdk: Any) -> None:
+        if (not isinstance(sdk, dict) or sdk.get("program") != "sulu-render"
+                or not isinstance(sdk.get("global_flags"), list) or not isinstance(sdk.get("commands"), dict)
+                or not all(isinstance(flags, list) and all(isinstance(flag, str) and FLAG_RE.fullmatch(flag)
+                                                            for flag in flags)
+                           for flags in [sdk["global_flags"], *sdk["commands"].values()])):
+            self.error(path, "sdk_cli must list the public sulu-render commands and their flags")
+
     def validate_connect_guidance(self) -> None:
         """Every client-facing guide carries the same supported connect commands."""
         for relative in ("README.md", USER_MCP_GUIDE, "skills/sulu-render/SKILL.md"):
@@ -678,6 +744,16 @@ class Validator:
                     self.validate_public_vocabulary(path)
 
         self.validate_manifest(ROOT / "api-surface.json")
+        try:
+            manifest = json.loads((ROOT / "api-surface.json").read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            manifest = {}
+        self.validate_sdk_inventory(ROOT / "api-surface.json", manifest.get("sdk_cli"))
+        for path in markdown_files:
+            if ".git" in path.parts:
+                continue
+            self.validate_tool_mentions(path, manifest.get("user_mcp"))
+            self.validate_sdk_commands(path, manifest.get("sdk_cli"))
         self.validate_connect_guidance()
         self.validate_blender_submission_coordination()
         return self.finish()

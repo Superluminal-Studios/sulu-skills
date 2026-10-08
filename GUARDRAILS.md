@@ -21,7 +21,7 @@ GETs mint credentials or synchronize destructive external state.
 | Credit purchase and commerce | Checkout, credit top-up, auto top-up, market purchase, price/discount, refund | Exact target and amount; current-session human approval; no automatic retry |
 | Render spend | Sulu MCP submit, batch submit, duplicate, retry, resume | Within the project authority the human set at consent; relay `approval_required`; retry only with the same idempotency key |
 | Render spend without authority | Legacy API or add-on submission, a Sulu MCP connection with no project budget | Project, frames and estimate stated; one current-session yes; no automatic retry |
-| Capacity and render deletion | Sulu MCP capacity change, job deletion | Execute with admin access in the grant; without it the human acts or reconnects with admin access |
+| Capacity and render deletion | Sulu MCP capacity change, job deletion | Execute with admin access in the grant; without it the human acts on the website |
 | Destructive/irreversible | Account/project/product/version/media delete, prune, entitlement-affecting commit | Inventory dependents/backups; name consequences; fresh explicit confirmation |
 | Human-secret interface | Stripe payment/onboarding, OAuth/provider consent, passwords, tax/bank/card data | Human completes it; agent never requests, enters, or relays the secrets |
 
@@ -102,9 +102,9 @@ because the human already set those limits at consent.
   destroys data or withdraws something people rely on: name the exact target
   to the human and get a yes first.
 - Render job deletion and capacity changes through Sulu MCP need admin access
-  in the grant, which the human turns on at consent. With it, delete only the
-  jobs the request names or clearly means. Without it, ask the human to act or
-  to reconnect with admin access.
+  in the grant, which the human can turn on at consent only for a client that
+  asks for `sulu.render.admin`. With it, delete only the jobs the request
+  names or clearly means. Without it, ask the human to act on the website.
 - Publishing is outward-facing. Submitting a product for review, publishing a
   version, posting a review or a seller response, and sending a marketplace
   or support message all reach other people. Draft first, confirm, then send.

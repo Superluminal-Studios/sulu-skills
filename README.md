@@ -19,8 +19,9 @@ add-on share scene and transfer work.
 ## Connect Sulu MCP
 
 Sulu MCP uses OAuth sign-in in the browser; there is no API key. At consent
-the human picks an organization and projects and sets a budget. The agent then
-renders inside that authority without asking again.
+the human picks an organization and projects, sets a budget and optionally a
+per-job limit and an end date. The agent then renders inside that authority
+without asking again.
 
 | Client | Connect |
 | --- | --- |
@@ -34,16 +35,22 @@ renders inside that authority without asking again.
 {"mcpServers":{"sulu":{"type":"http","url":"https://mcp.superlumin.al/mcp"}}}
 ```
 
-For local packaging and bulk downloads, use the `sulu-render` SDK from
-`https://mcp.superlumin.al/.well-known/sulu-sdk`:
+For local packaging and bulk downloads, use the `sulu-render` SDK. Download
+the bundle named by `download_url` in the manifest at
+`https://mcp.superlumin.al/.well-known/sulu-sdk`, unzip it, and run its
+`sulu-render` launcher:
 
 ```bash
+sulu-render doctor
 sulu-render login
 sulu-render context
 sulu-render jobs
 sulu-render submit --frames 1-50 <scene>
-sulu-render download --job <job> --output <directory>
+sulu-render download <job> --output <directory>
 ```
+
+`sulu-render login` creates the SDK's own grant, with its own projects and
+budget chosen on the same consent page.
 
 `context`, `jobs` and `submit --frames` need SDK 0.3 or later. Run
 `sulu-render <command> --help` for every option. The
@@ -154,7 +161,8 @@ python3 -m unittest discover -s tests -v
 ```
 
 The validator checks skill structure, discovery metadata, references, links,
-placeholders, syntax, API-guide style, connect commands, and complete
-ownership of the documented public API inventory. The Sulu MCP tool table,
+placeholders, syntax, API-guide style, connect commands, tool names, SDK
+commands and flags, and complete ownership of the documented public API
+inventory. The Sulu MCP tool table,
 statuses and error codes are generated from the released server contract; do
 not edit the marked blocks by hand.

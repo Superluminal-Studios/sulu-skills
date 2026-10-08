@@ -29,7 +29,7 @@ storage, command history or unrelated applications for alternate tokens.
 ## Act within the project authority
 
 At consent the human picks the organization, the projects, a budget, and
-optionally an end date and admin access. Inside that authority, run every
+optionally a per-job limit and an end date. Inside that authority, run every
 tool directly: upload, submit, duplicate, pause, resume, retry, template
 changes and downloads. Do not ask for approval, do not wait for a reply to a
 cost estimate, and do not repeat a question the request already answers. The
@@ -42,8 +42,12 @@ Ask the human only when:
    then repeat the same call with the same idempotency key (adding the
    returned `confirmation_token` after `confirmation_required`);
 2. the request needs a job deletion or a capacity change and the grant has no
-   admin access;
-3. the work needs more credits. Never buy credits; the human does that.
+   admin access. The connect commands above never include admin access, so
+   ask the human to do it on the website;
+3. the work needs more credits. Never buy credits; the human does that;
+4. a tool returns `ROUTE_RETIRED` (ask the human to make that change on the
+   website) or `AUTHORITY_DAMAGED` (ask the human to remove the agent under
+   Connected agents and connect again). Do not retry either.
 
 Also ask once, before uploading, when the deliverable is genuinely ambiguous.
 
@@ -77,7 +81,9 @@ human asked for them, with the expected count and sizes. A job id or a
 
 Every write takes a UUID idempotency key. After an ambiguous response, repeat
 the same request with the same key or read `render_operation_get`; never mint
-a new key for a lost response. The [Sulu MCP contract](references/user-mcp.md)
+a new key for a lost response. A `needs_reconciliation` result means the
+outcome is not known yet: poll `render_operation_get` with its `operation_id`
+until the state is final, and never submit again. The [Sulu MCP contract](references/user-mcp.md)
 lists every tool, scope, status, lifetime and route.
 
 ## Blender MCP, the SDK and the Sulu add-on
@@ -88,8 +94,13 @@ lists every tool, scope, status, lifetime and route.
   scene properties and registered operators; never read secrets or import
   add-on modules.
 - **The `sulu-render` SDK** packages local files, uploads, submits and
-  downloads under its own Sulu sign-in (`sulu-render login`). Use it whenever
-  you can run local commands. Never call its private modules.
+  downloads. Use it whenever you can run local commands. Install it once from
+  the bundle named in the SDK manifest at
+  `https://mcp.superlumin.al/.well-known/sulu-sdk` (unzip it and run its
+  `sulu-render` launcher; `sulu-render doctor` checks the setup). It has its
+  own sign-in: `sulu-render login` creates a separate grant with its own
+  projects and budget, chosen by the human on the consent page. Never call its
+  private modules.
 - **The Sulu Blender add-on** submits with the human's add-on sign-in, outside
   the project authority and its budget. Use it when the human asks for the
   add-on or when Sulu MCP is not available. Because no budget applies, tell the
@@ -112,7 +123,8 @@ render writes:
 | `PATCH /api/jobs/{org_id}/{job_id}` | `render_job_template_update` |
 | `POST /api/jobs/{org_id}/{job_id}/duplicate` | `render_job_duplicate` |
 | `PUT /api/render/capacity/{org_id}` | `render_capacity_set` |
-| Farm pause, resume, cancel, delete and task retry | `render_job_pause`, `render_job_resume`, `render_job_cancel`, `render_jobs_delete`, `render_tasks_retry` |
+| Farm pause, resume, delete and task retry | `render_job_pause`, `render_job_resume`, `render_jobs_delete`, `render_tasks_retry` |
+| Farm cancel | `render_job_cancel`, added in the next release |
 
 Legacy writes have no budget and no idempotency key. A failed or unavailable
 Sulu MCP call is not permission to use them. When a human explicitly asks for

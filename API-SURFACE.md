@@ -83,3 +83,11 @@ route coming back, a route with the wrong credential audience, missing public
 evidence and a non-production status. The release process regenerates this
 section from the server source and fails when it is stale; this repository
 does not enumerate private service endpoints.
+
+## SDK commands
+
+The `sdk_cli` section lists the public commands and flags of the `sulu-render`
+SDK. It is maintained by hand from the SDK's command-line help. Validation
+rejects a guide that shows a `sulu-render` command or flag missing from it,
+names a Sulu MCP tool that does not exist, or names a next-release tool
+without saying so.

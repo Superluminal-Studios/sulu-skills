@@ -58,7 +58,6 @@
       {"name":"render_operation_get","scope":"","profile":"","mutation":false,"destructive":false,"skill":"sulu-render","scope_mode":"original_operation"},
       {"name":"render_upload_prepare","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_upload_finalize","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_upload_cancel","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_job_quote","scope":"sulu.render.submit","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_submit","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_jobs_submit_batch","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
@@ -66,13 +65,15 @@
       {"name":"render_job_template_update","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_pause","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_resume","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
-      {"name":"render_job_cancel","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_tasks_retry","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_jobs_delete","scope":"sulu.render.delete","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_capacity_quote","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":false,"destructive":false,"skill":"sulu-render"},
       {"name":"render_capacity_set","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"}
     ],
-    "planned_tools": [],
+    "planned_tools": [
+      {"name":"render_upload_cancel","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render","release":"next"},
+      {"name":"render_job_cancel","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render","release":"next"}
+    ],
     "job_statuses": [
       "queued",
       "running",
@@ -132,8 +133,28 @@
       "account_administration",
       "general_storage",
       "billing_purchase",
-      "arbitrary_api"
+      "arbitrary_api",
+      "standalone_render_cancel"
     ]
+  },
+  "sdk_cli": {
+    "program": "sulu-render",
+    "min_version": "0.3.0",
+    "manifest": "https://mcp.superlumin.al/.well-known/sulu-sdk",
+    "global_flags": ["--help", "--version", "--resource", "--jsonl", "--quiet", "--yes", "--non-interactive"],
+    "commands": {
+      "doctor": ["--offline", "--install-rclone"],
+      "workflow": [],
+      "login": ["--no-browser", "--scope"],
+      "logout": [],
+      "context": ["--organization"],
+      "jobs": ["--organization", "--project", "--status", "--limit", "--all"],
+      "status": ["--organization", "--watch", "--timeout", "--tasks"],
+      "pack": ["--output", "--project-root"],
+      "upload": ["--organization", "--project", "--name", "--main-file", "--input-mode", "--project-root", "--upload-method", "--parallel"],
+      "submit": ["--organization", "--project", "--name", "--main-file", "--input-mode", "--project-root", "--upload-method", "--parallel", "--template", "--frames", "--scene", "--engine", "--format", "--blender", "--job-name", "--samples", "--resolution", "--resolution-percentage", "--seconds-per-frame", "--batch-size", "--max-cost-usd", "--dry-run"],
+      "download": ["--organization", "--output", "--frames", "--concurrency", "--delivery"]
+    }
   },
   "expected_counts": {
     "custom_routes": 140,
