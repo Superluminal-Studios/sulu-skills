@@ -58,6 +58,7 @@
       {"name":"render_operation_get","scope":"","profile":"","mutation":false,"destructive":false,"skill":"sulu-render","scope_mode":"original_operation"},
       {"name":"render_upload_prepare","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_upload_finalize","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_upload_cancel","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_job_quote","scope":"sulu.render.submit","profile":"sulu.render","mutation":false,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_submit","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_jobs_submit_batch","scope":"sulu.render.submit","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
@@ -65,14 +66,13 @@
       {"name":"render_job_template_update","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_pause","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_job_resume","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
+      {"name":"render_job_cancel","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_tasks_retry","scope":"sulu.render.control","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render"},
       {"name":"render_jobs_delete","scope":"sulu.render.delete","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"},
       {"name":"render_capacity_quote","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":false,"destructive":false,"skill":"sulu-render"},
       {"name":"render_capacity_set","scope":"sulu.render.capacity","profile":"sulu.render.admin","mutation":true,"destructive":true,"skill":"sulu-render"}
     ],
-    "planned_tools": [
-      {"name":"render_job_cancel","profile":"sulu.render","mutation":true,"destructive":false,"skill":"sulu-render","release":"next"}
-    ],
+    "planned_tools": [],
     "job_statuses": [
       "queued",
       "running",
@@ -132,8 +132,7 @@
       "account_administration",
       "general_storage",
       "billing_purchase",
-      "arbitrary_api",
-      "standalone_render_cancel"
+      "arbitrary_api"
     ]
   },
   "expected_counts": {

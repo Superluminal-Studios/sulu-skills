@@ -112,7 +112,7 @@ render writes:
 | `PATCH /api/jobs/{org_id}/{job_id}` | `render_job_template_update` |
 | `POST /api/jobs/{org_id}/{job_id}/duplicate` | `render_job_duplicate` |
 | `PUT /api/render/capacity/{org_id}` | `render_capacity_set` |
-| Farm pause, resume, delete and task retry | `render_job_pause`, `render_job_resume`, `render_jobs_delete`, `render_tasks_retry` |
+| Farm pause, resume, cancel, delete and task retry | `render_job_pause`, `render_job_resume`, `render_job_cancel`, `render_jobs_delete`, `render_tasks_retry` |
 
 Legacy writes have no budget and no idempotency key. A failed or unavailable
 Sulu MCP call is not permission to use them. When a human explicitly asks for
