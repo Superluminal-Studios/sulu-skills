@@ -60,7 +60,8 @@ with its own sign-in. Its manifest is at
 | `sulu-render login` | Browser sign-in for the SDK |
 | `sulu-render context` | Organizations and projects the account can use |
 | `sulu-render jobs` | Recent jobs and their status |
-| `sulu-render submit --frames <range>` | Package a saved scene with its dependencies, upload it and submit |
+| `sulu-render pack <scene> --output <archive>` | Package a saved scene with its dependencies into one ZIP |
+| `sulu-render submit --frames <range>` | Upload a packed ZIP (or a .blend plus extra files) and submit |
 | `sulu-render download` | Download a job's outputs with resumable ranges |
 
 `context`, `jobs` and `submit --frames` need SDK 0.3 or later. Run
@@ -198,8 +199,9 @@ Added in the next release. Use these only when `tools/list` shows them.
    project by exact name; `state` `provisioning` means call it again shortly.
 3. Pick a Blender version from `render_runtimes_list` that matches the scene.
    Retired versions are rejected with `RUNTIME_UNAVAILABLE`.
-4. Move the inputs. With local commands, `sulu-render submit` packages the
-   saved scene with its dependencies and also does step 5. Otherwise call
+4. Move the inputs. With local commands, `sulu-render pack` packages the
+   saved scene with its dependencies into one ZIP, and `sulu-render submit`
+   uploads that ZIP and also does step 5. Otherwise call
    `render_upload_prepare` with the exact name, size and SHA-256 of every
    file, send each file to its returned upload target, then call
    `render_upload_finalize`. The upload receipt can be reused by any number of

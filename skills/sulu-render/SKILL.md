@@ -64,8 +64,9 @@ human asked for them, with the expected count and sizes. A job id or a
    authority; `render_project_ensure` creates a missing project by name.
 2. Inspect the scene through Blender MCP when Blender is open, and save it.
    Pick a Blender version from `render_runtimes_list`.
-3. Upload and submit: the `sulu-render` SDK packages the saved scene with its
-   dependencies, uploads and submits in one command. Without local commands,
+3. Upload and submit: `sulu-render pack` packages the saved scene with its
+   dependencies into one ZIP, and `sulu-render submit` uploads and submits
+   it. Without local commands,
    use `render_upload_prepare`, send the files, `render_upload_finalize`, then
    `render_job_submit`, or `render_jobs_submit_batch` for several scenes or
    ranges. A quote is optional.
