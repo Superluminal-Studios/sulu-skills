@@ -264,8 +264,11 @@ uses the preserved inputs; report missing source input instead of guessing.
 Capacity changes take exact `requested_max_gpus` and `gpus_per_node` values.
 
 Outputs include images, EXR layers, movies, passive text, archives and unknown
-compositor files. Follow every output cursor and report `settling` instead of
-calling a partial list complete. Preview returns a small PNG, not the
+compositor files. Follow every output cursor until `next_cursor` is null, and
+call the list complete only when `catalog_state` is `terminal_snapshot`; any
+other state means the job can still add outputs. Render outputs are kept for 7
+days; `output_retention: expired` means they were deleted, not that the job
+produced nothing. Preview returns a small PNG, not the
 original. Text reads are strict UTF-8 up to 256 KiB; HTML, SVG, archives and
 logs are download-only. Binary reads are capped at 8 MiB per call. Large
 inputs and outputs never travel as MCP base64.
@@ -286,7 +289,7 @@ When known, job reads also carry `effective_status`, `status_reason`, `status_ac
 <!-- END GENERATED: job-status -->
 
 <!-- BEGIN GENERATED: error-codes -->
-Error codes: `UNAUTHENTICATED`, `TOKEN_RESOURCE_MISMATCH`, `INSUFFICIENT_SCOPE`, `USER_NOT_ELIGIBLE`, `NOT_FOUND`, `REVISION_CONFLICT`, `IDEMPOTENCY_CONFLICT`, `CONFIRMATION_REQUIRED`, `CONFIRMATION_EXPIRED`, `QUOTE_EXPIRED`, `BALANCE_INSUFFICIENT`, `SOURCE_INPUT_UNAVAILABLE`, `OUTPUT_SETTLING`, `GENERATION_CHANGED`, `RATE_LIMITED`, `DEPENDENCY_UNAVAILABLE`, `RECONCILIATION_REQUIRED`, `AUTH_UNAVAILABLE`, `UPSTREAM_TIMEOUT`, `UPSTREAM_UNAVAILABLE`, `UPSTREAM_REJECTED`, `FARM_STARTING`, `OUTPUT_CONTRACT_MISMATCH`, `ORG_ROLE_REQUIRED`, `ROUTE_RETIRED`, `STORAGE_UNAVAILABLE`, `RANGE_REQUIRED`, `RANGE_NOT_SATISFIABLE`, `OUTSIDE_AUTHORITY`, `BUDGET_EXCEEDED`, `RUNTIME_UNAVAILABLE`, `JOB_NOT_CREATED`, `INVALID_REQUEST`.
+Error codes: `UNAUTHENTICATED`, `TOKEN_RESOURCE_MISMATCH`, `INSUFFICIENT_SCOPE`, `USER_NOT_ELIGIBLE`, `NOT_FOUND`, `REVISION_CONFLICT`, `IDEMPOTENCY_CONFLICT`, `CONFIRMATION_REQUIRED`, `CONFIRMATION_EXPIRED`, `QUOTE_EXPIRED`, `BALANCE_INSUFFICIENT`, `SOURCE_INPUT_UNAVAILABLE`, `OUTPUT_SETTLING`, `GENERATION_CHANGED`, `RATE_LIMITED`, `DEPENDENCY_UNAVAILABLE`, `RECONCILIATION_REQUIRED`, `AUTH_UNAVAILABLE`, `UPSTREAM_TIMEOUT`, `UPSTREAM_UNAVAILABLE`, `UPSTREAM_REJECTED`, `FARM_STARTING`, `OUTPUT_CONTRACT_MISMATCH`, `ORG_ROLE_REQUIRED`, `ROUTE_RETIRED`, `STORAGE_UNAVAILABLE`, `RANGE_REQUIRED`, `RANGE_NOT_SATISFIABLE`, `OUTSIDE_AUTHORITY`, `BUDGET_EXCEEDED`, `RUNTIME_UNAVAILABLE`, `JOB_NOT_CREATED`, `INVALID_REQUEST`, `INVALID_CURSOR`, `INTERNAL_ERROR`, `AUTHORITY_DAMAGED`, `OPERATION_LIMIT_REACHED`.
 <!-- END GENERATED: error-codes -->
 
 Errors have the shape `{code, message, stage, retryable, retry_after_ms,
