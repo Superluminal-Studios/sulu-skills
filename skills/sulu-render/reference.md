@@ -196,15 +196,47 @@ Supported query parameters:
 - `frame`;
 - `frame_start`, `frame_count`, `frame_step`;
 - `limit`;
-- `scan_limit`.
+- `scan_limit`;
+- `cursor`, including an empty value to start download pagination.
 
 The response includes object keys, sizes, frame information, layer metadata,
-and `truncated`. Only supported image formats are returned. This route can
-provision missing project storage as a side effect.
+`truncated`, and `nextCursor`. Each `files` entry includes `last_modified` in
+Unix milliseconds.
+This route can provision missing project storage as a side effect.
+
+Without `cursor`, the route retains its image-preview behavior and can use a
+precomputed inventory. It returns only supported preview image formats, with
+`nextCursor: ""`. A truncated preview response is not a complete download list.
+Inventory-backed no-cursor responses always report `last_modified: 0` for every
+file, even when the stored object has a modification timestamp.
+
+For downloads, start with `?cursor=` and pass each nonempty `nextCursor` as the
+next request's `cursor`. Keep the filters and limits unchanged across pages.
+An empty `files` array can still have a continuation. Stop only when
+`nextCursor` is `""`. Whenever a continuation is present, `truncated` is true.
+An invalid cursor, or one from another job, organization, or selection, returns
+HTTP 400.
+
+Cursor pages list the rendering job's own outputs in object-key order.
+They include the preview image formats, Cineon (`.cin`), IRIS/SGI
+(`.rgb`, `.rgba`, `.sgi`, `.bw`), and FFmpeg movie containers (`.avi`, `.dv`,
+`.flv`, `.mpg`, `.mpeg`, `.dvd`, `.vob`, `.mp4`, `.mkv`, `.webm`, `.ogg`,
+`.ogv`, `.mov`). Reserved metadata, manifests, and thumbnail objects are excluded.
+Frame names and object keys retain their original whitespace.
+
+`limit` caps returned files (default 500, maximum 2000). On cursor requests,
+`scan_limit` caps keys scanned in the entire request (maximum 5000). It defaults
+to `limit` for unfiltered requests and 2000 for frame-filtered requests.
+Scanning can end exactly at the budget and require an empty terminal page.
+Every file on a cursor page has a positive `last_modified` timestamp.
+A missing or nonpositive listing timestamp fails the page with HTTP 503.
+The list is live: files added before an already-passed key require a fresh
+enumeration. Use `source_urls` to sign the exact frame and key from any page.
 
 ### POST /api/jobs/{org_id}/{job_id}/source_urls
 
-Presigns known output keys.
+Presigns known public output keys, including the download-only Cineon, SGI,
+and movie container formats returned by cursor pages. Reserved paths are refused.
 
 Request:
 
