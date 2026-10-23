@@ -7,6 +7,7 @@ including multipart file uploads and concurrent review.
 
 - [Shared review safety](#shared-review-safety)
 - [Task versions](#task-versions)
+- [Managed review requests](#managed-review-requests)
 - [Multipart file mutations](#multipart-file-mutations)
 - [Revision automation and races](#revision-automation-and-races)
 - [Comments and mentions](#comments-and-mentions)
@@ -33,6 +34,43 @@ including multipart file uploads and concurrent review.
   are public to anyone who obtains the URL. Never upload secrets, private keys,
   confidential source, or sensitive client media without explicit approval of
   this exposure.
+
+## Managed review requests
+
+Managed submissions, reviewer assignment, explicit requests and publish decisions
+are separate from legacy `task_versions` and comments below. Creating a comment
+or PATCHing a notification never creates a managed review request.
+The [first-party protocol reference](../reference.md#managed-review-request-protocol)
+describes its authenticated routes. Source publication establishes no production
+availability or additional native OAuth/MCP capability.
+
+Prepare the exact existing submission as its current creator, retaining current
+`revision.submit` and source access. Show the exact submission, configured
+assignment and server-derived reviewers before the outward action. Follow the
+shared confirmation gate. A blocked plan requires resolving its stated reason;
+it supplies no reviewer picker. Administrative assignment remains separate under
+`project.configure`. A request grants no configuration or approval authority.
+
+Persist the exact prepared command, requesting account and request identity
+before POST. Keep its four selection fields and expected assignment revision
+unchanged during recovery. On an unknown response, read by saved request key;
+retain the returned operation ID and resume only that operation if needed.
+Never create a fresh identity after errors, cancellation or an account switch.
+Recover under the original account with its current authority. Changed content
+under the same actor/client/key conflicts; a fresh stale assignment is refused.
+
+Clear pending recovery only after validated completed, committed readback with
+`journal-verified` or `recovered-journal` durability. Match the selected project,
+incarnation, submission/digest, assignment/digest and revision to the saved command.
+Current account and membership authority still gate replay, read and resume.
+Request completion records an occurrence; it does not prove mail delivery.
+
+The sender rechecks requester authority/source access, current reviewer
+eligibility, preferences and the committed receipt before delivery. Existing
+attention is deduplicated per assignment and recipient, excluding the actor.
+Import retains request provenance without granting review rights or sending
+new target notifications. Refreshing a plan or configuring reviewers does not
+implicitly submit an explicit request.
 
 ## Task versions
 

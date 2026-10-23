@@ -8,6 +8,7 @@ tracker. Base URL: `https://api.superlumin.al`. Send
 ## Contents
 
 - [Record endpoints](#record-endpoints)
+- [Managed review-request protocol](#managed-review-request-protocol)
 - [Effective rules](#effective-rules)
 - [Safe update boundary](#safe-update-boundary)
 - [Complete field inventory](#complete-field-inventory)
@@ -33,6 +34,56 @@ JSON is appropriate unless uploading a file. Lists accept `filter`, `sort`,
 `expand`, `fields`, `page`, `perPage`, and `skipTotal`. Record responses are
 Sulu records; lists are `{page, perPage, totalItems, totalPages, items}`.
 Errors are Sulu-shaped and writes have no idempotency key.
+
+## Managed review-request protocol
+
+These authenticated first-party routes describe managed submission review.
+Source publication does not establish production availability. The native OAuth
+command allowlist and MCP catalogue are unchanged; these routes add no advertised
+agent tool. Legacy `task_versions`, comments and notification PATCHes do not
+create this request.
+
+| Purpose | Request |
+| --- | --- |
+| Prepare exact selection | `GET /api/production/projects/{projectId}/revision-submissions/{submissionId}/review-request?incarnation={incarnation}` |
+| Submit saved command | `POST /api/production/commands` |
+| Resolve unknown response | `GET /api/production/projects/{projectId}/operations/by-request/{requestId}?command=review.request&incarnation={incarnation}` |
+| Read owning operation | `GET /api/production/projects/{projectId}/operations/{operationId}?incarnation={incarnation}` |
+| Resume owning operation | `POST /api/production/projects/{projectId}/operations/{operationId}/resume` with `{"incarnation": "<selected-incarnation>"}` |
+
+Prepare returns `sulu.production.review-request-plan/1`, exact submission/digest,
+`assignment: {id, digest, revision}` or null, server-derived `recipients`, and
+`blocked`. Blocked values are `no_current_assignment`, `assignment_not_durable`
+and `no_eligible_reviewers`; an empty value permits the request.
+Only the current submission creator with current `revision.submit` and source
+access can request. Existing administrative assignment uses `project.configure`.
+A request grants no configuration or approval authority.
+
+The illustrative command uses semantic placeholders. Copy the exact prepared
+digests and assignment revision into the saved command:
+
+```json
+{
+  "schema": "sulu.production.command/1",
+  "requestId": "<saved-request-id>",
+  "projectId": "<selected-project>",
+  "incarnation": "<selected-incarnation>",
+  "command": "review.request",
+  "expected": {"aggregateRevision": 1},
+  "input": {
+    "submissionId": "<prepared-submission-id>",
+    "submissionDigest": {"algorithm": "sha256", "value": "<prepared-submission-64-hex-digest>"},
+    "assignmentId": "<prepared-assignment-id>",
+    "assignmentDigest": {"algorithm": "sha256", "value": "<prepared-assignment-64-hex-digest>"}
+  }
+}
+```
+
+`aggregateRevision` shows an illustrative `1`; use the prepared positive integer. Input has exactly those four fields, with no recipient list or
+actor/grant fields. The server derives current eligible recipients.
+The operation result profile is `sulu.production.review-request/1`.
+Follow [managed review recovery](references/review-media.md#managed-review-requests)
+for confirmation, durable completion and same-identity recovery.
 
 ## Access model
 

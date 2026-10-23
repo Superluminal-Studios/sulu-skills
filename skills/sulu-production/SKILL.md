@@ -126,7 +126,20 @@ estimation, schedule dates, archived state, and documented metadata.
 
 ## Revisions and review
 
-Collections:
+Managed revision submissions, configured reviewer assignments, explicit review
+requests and publish decisions have separate command lifecycles. The first-party
+`review.request` protocol lets the current submission creator, with current
+`revision.submit` and source access, request already configured reviewers.
+Administrative assignment remains separate under `project.configure`; requesting
+adds no approval authority or reviewer picker.
+
+This is first-party protocol information. Source publication does not establish
+production availability. The native OAuth command allowlist and MCP catalogue
+are unchanged; no enrolled-agent review-request tool is advertised here.
+See the [protocol reference](reference.md#managed-review-request-protocol) and
+[review recovery guidance](references/review-media.md#managed-review-requests).
+
+The following collections describe legacy tracker revisions and discussion:
 
 - `task_versions`;
 - `comments`;
