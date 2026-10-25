@@ -147,7 +147,8 @@ documented mutable settings. Membership and role changes require the specific
 capability shown by the current API state.
 
 Project creation uses `POST /api/projects/create` with an explicit
-organization and UUID idempotency key. Poll `GET /api/projects/operations/{id}`
+organization and UUID idempotency key. A new reservation returns HTTP 202 with
+its durable `operation_id`. Poll `GET /api/projects/operations/{id}`
 after acceptance; do not create a second project after a lost response. Inside
 a Sulu MCP project authority, agents use `render_project_ensure` instead.
 

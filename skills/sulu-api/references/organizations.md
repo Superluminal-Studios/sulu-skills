@@ -205,8 +205,13 @@ GET /api/collections/projects/records?filter=%28organization_id%3D%27org_abc123%
 - **Coordinated release:** closed. Do not use raw creation. Use
   `POST /api/projects/create` with `{organization_id, name, idempotency_key}`.
   The key is a UUID; the chosen organization must be currently accessible.
-  Poll `GET /api/projects/operations/{id}` for completion. Repeating the same
-  key and input reconciles the original project; changed input conflicts.
+  A new reservation returns HTTP 202 and a durable `operation_id`, before storage is ready.
+  Poll `GET /api/projects/operations/{id}` for completion. Its `step`, `reason`,
+  `created_at`, `updated_at` and `elapsed_seconds` report progress. A successful
+  operation returns HTTP 200 with `state: "succeeded"` and the project. A failed
+  operation keeps the same ID and supplies a plain `reason`; do not create a
+  replacement automatically. Repeating the same key and input resumes the
+  original operation; changed input conflicts.
 - The historical raw field table below is not a creation contract for that
   release. Project creation remains outside the Sulu User MCP.
 
