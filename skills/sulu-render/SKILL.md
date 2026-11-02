@@ -74,10 +74,22 @@ human asked for them, with the expected count and sizes. A job id or a
    use `render_upload_prepare`, send the files, `render_upload_finalize`, then
    `render_job_submit`, or `render_jobs_submit_batch` for several scenes or
    ranges. A quote is optional.
-4. Follow with `render_job_watch`; read `render_job_logs_list` when tasks fail.
+4. Read the stored template with `render_job_get` and verify `use_bserver: true`.
+   Follow with `render_job_watch`; read `render_job_logs_list` when tasks fail.
 5. List every output page and download with `sulu-render download`, or fetch
    the short-lived URLs from `render_outputs_export`.
-6. Check the local files against the deliverable, then report.
+6. Check the local files against the deliverable. Inspect the resulting images
+   or representative animation frames for missing assets and visual problems,
+   then report any limits to verification.
+
+Set `use_bserver: true` explicitly in each new submission template, including
+batch items. For duplicates, inspect inherited settings and set persistence
+for the intended new render through supported template edits. For the SDK,
+read `sulu-render submit --help` for its supported template options.
+Persistence keeps Blender running between tasks. It does not change image
+quality. Current runtimes provide native stages and live preview with either
+setting. Use false only for an explicit fresh-process request or a documented
+compatibility problem. Preserve running jobs if their stored setting differs.
 
 Every write takes a UUID idempotency key. After an ambiguous response, repeat
 the same request with the same key or read `render_operation_get`; never mint
