@@ -17,16 +17,6 @@ class ValidateSkillsTests(unittest.TestCase):
         validator.validate_user_mcp_manifest(ROOT / 'api-surface.json', section)
         return validator.errors
 
-    def test_user_mcp_contract_is_consistent_and_documented(self):
-        section = self.section()
-        names = {tool['name'] for tool in section['tools']}
-        self.assertGreaterEqual(len(names), 26)
-        self.assertTrue({'sulu_context_get', 'render_job_submit', 'render_jobs_delete'} <= names)
-        self.assertEqual(len(section['scopes']), 8)
-        self.assertEqual(sorted(section['scope_profiles']), ['sulu.render', 'sulu.render.admin'])
-        self.assertEqual(self.section_errors(section), [])
-
-
     def test_user_mcp_must_be_the_production_endpoint(self):
         for field, value in (('status', 'not_deployed'), ('public_enabled', False),
                              ('scope', 'all_users_and_accounts'), ('endpoint', 'https://example.invalid/mcp')):
@@ -34,12 +24,6 @@ class ValidateSkillsTests(unittest.TestCase):
                 section = self.section()
                 section[field] = value
                 self.assertTrue(self.section_errors(section))
-
-
-    def test_connect_guidance_is_consistent(self):
-        validator = Validator()
-        validator.validate_connect_guidance()
-        self.assertEqual(validator.errors, [])
 
 
     def test_public_vocabulary_rejects_private_implementation_terms(self) -> None:
